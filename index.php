@@ -14,13 +14,7 @@
 	</head>
 	
 	<body>
-		<header>
-			<h1>Développement web avancé</h1>
-            <nav>
-		        <ul>
-		        </ul>
-            </nav>
-		</header>
+		<?php include "include/header.inc.php"; ?>
 	<main>
 		<?php
 		if(!(isset($_COOKIE["aut_cookie"]))||(empty($_COOKIE["aut_cookie"]))){

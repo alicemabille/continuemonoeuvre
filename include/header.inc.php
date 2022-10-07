@@ -1,5 +1,4 @@
 <header>
-<<<<<<< HEAD
   <nav>
     <a href="index.php"><img src="images/logo.png" alt="Continue mon &oelig;uvre" id="logo-header"/></a>
     <ul>

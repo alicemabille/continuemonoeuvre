@@ -11,6 +11,7 @@
 		<title>Continue mon &oelig;uvre</title>
 		<meta name="author" content="alice mabille"/>
 		<link rel="stylesheet" href="style.css">
+		<link rel="icon" type="image/ico" href="favicon.ico"/>
 	</head>
 	
 	<body>

@@ -9,13 +9,8 @@
 	<head>
         <meta charset="utf-8" />
 		<title>Continue mon &oelig;uvre</title>
-<<<<<<< HEAD
 		<meta name="author" content="alice mabille"/>
-		<link rel="stylesheet" href="styles.css">
-=======
-		<meta name="author" content="alice mabille" />
 		<link rel="stylesheet" href="style.css">
->>>>>>> c60d7f189af0279888746ddcdf0c3ae9bcf8af88
 	</head>
 	
 	<body>

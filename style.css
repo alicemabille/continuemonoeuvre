@@ -1,58 +1,75 @@
-table{
-	border: medium solid #000000;
-	line-height: 1.7;
-	font-size: 20px;
-	margin: auto;
+/* Partie HEADER */
+header nav ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    list-style-type: none;
+    font-size: 20pt;
+    font-weight: 600;
+    padding-left: 0;
+    margin-left: 0;
 }
 
-body{
-	font-family :arial,"Times New Roman";
-	font-size: 20px;	
+#logo-header {
+    width: 110px;
+    max-width: min-content;
+    padding: 0;
+    margin: 0;
 }
 
-html{
-	font-family :arial,"Times New Roman";
-	background-color: #C9DFFF;
-	padding-left: 3em;
-	padding-right: 3em;
+/* Corps de la page */
+
+body {
+    background-color: #fff973;
 }
 
-p{
-	text-align: justify;
-	line-height: 2;
-	font-size: 20px;
-}
-h1{
-	color: #2861E8;
-	text-align:center;
- 	font-weight:bold;
- 	text-transform: capitalize;
- 	font-size: 50px;
-}
-h2{
-	color:#61AAFF;
-	font-size: 30px;
-	text-indent: 120px;
-}
-#soustitre{
-	text-align: center;
-}
-ul.navi,li.navi{
-	list-style-type: none;
-	line-height: 11;
-	display: inline;
-	margin: 12px;
-	color: black;
+main {
+    padding: 5% 10% 5%;
 }
 
-ul.navi,li.navi{
-	list-style-type: none;
-	line-height: 11;
-	display: inline;
-	margin: 12px;
-	color: black;
+a {
+    color: #000;
+    text-decoration: none;
 }
 
-#soustitre{
-	text-align: center;
+a:hover {
+    text-decoration: underline;
 }
+
+.img-presentation-oeuvre {
+    width: 600px;
+    justify-content: center;
+}
+
+section h2 {
+    text-align: center;
+}
+
+figure {
+    text-align: center;
+}
+
+@media  (max-width: 600px) {
+    header nav ul {
+        flex-direction: column;
+    }
+}
+
+
+/* Partie FOOTER */
+
+footer ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: space-around; */
+    list-style-type: none;
+    font-size: 15pt;
+    font-weight: 600;
+}
+
+footer ul li {
+    padding: 1% 0% 0%;
+}
+

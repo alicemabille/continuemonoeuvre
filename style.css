@@ -1,0 +1,58 @@
+table{
+	border: medium solid #000000;
+	line-height: 1.7;
+	font-size: 20px;
+	margin: auto;
+}
+
+body{
+	font-family :arial,"Times New Roman";
+	font-size: 20px;	
+}
+
+html{
+	font-family :arial,"Times New Roman";
+	background-color: #C9DFFF;
+	padding-left: 3em;
+	padding-right: 3em;
+}
+
+p{
+	text-align: justify;
+	line-height: 2;
+	font-size: 20px;
+}
+h1{
+	color: #2861E8;
+	text-align:center;
+ 	font-weight:bold;
+ 	text-transform: capitalize;
+ 	font-size: 50px;
+}
+h2{
+	color:#61AAFF;
+	font-size: 30px;
+	text-indent: 120px;
+}
+#soustitre{
+	text-align: center;
+}
+ul.navi,li.navi{
+	list-style-type: none;
+	line-height: 11;
+	display: inline;
+	margin: 12px;
+	color: black;
+}
+
+ul.navi,li.navi{
+	list-style-type: none;
+	line-height: 11;
+	display: inline;
+	margin: 12px;
+	color: black;
+}
+
+#soustitre{
+	text-align: center;
+}

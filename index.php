@@ -10,7 +10,7 @@
         <meta charset="utf-8" />
 		<title>Continue mon &oelig;uvre</title>
 		<meta name="author" content="alice mabille" />
-		<link rel="stylesheet" href="styles.css">
+		<link rel="stylesheet" href="style.css">
 	</head>
 	
 	<body>

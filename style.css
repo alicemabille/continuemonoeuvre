@@ -1,14 +1,30 @@
 /* Partie HEADER */
+header nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 header nav ul {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
+    justify-content: flex-end;
     list-style-type: none;
-    font-size: 20pt;
+    font-size: 15pt;
     font-weight: 600;
     padding-left: 0;
     margin-left: 0;
+}
+
+header nav ul li {
+    background-color: #008cff;
+    border-radius: 20px;
+    padding: 5px 10px 5px;
+}
+
+header nav ul li a {
+    color: #fff;
 }
 
 #logo-header {

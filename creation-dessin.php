@@ -31,9 +31,20 @@
 		}
 		?>
 		
-		<section>
-			<h2>Poste ta propre œuvre et laisse les autres la continuer ! Ajoute ton grain de sel et crée des œuvres aux côtés d'autres internautes !</h2>
+		<section class="container">
+			<h2>Dessinez !</h2>
+            <div id="toolbar">
+                <label for="stroke">Stroke</label>
+                <input id="stroke" name="stroke" type="color">
+                <label for="lineWidth">Line width</label>
+                <input id="lineWidth" name="lineWidth" type="number" value="5">
+                <button id="clear">Clear</button>
+            </div>
+            <div class="drawing-board">
+                <canvas id="drawing-board">Votre navigateur ne vous permet pas de dessiner. Désolés.</canvas>
+            </div>
 		</section>
+        <script src="scripts/creation-dessin.js"></script>
 	</main>
 	
 	<?php include "include/footer.inc.php"; ?>

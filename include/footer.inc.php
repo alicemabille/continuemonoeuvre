@@ -6,3 +6,4 @@
     	<li class="footer-list-item">Dernière mise à jour : 20 octobre 2022</li>
   	</ul>
 </footer>
+<script src="scripts/script.js"></script>

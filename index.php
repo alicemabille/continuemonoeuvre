@@ -19,6 +19,11 @@
 	<main>
 		<section>
 			<h2>Poste un texte et laisse les autres le continuer ! Ajoute ton grain de sel et crée des œuvres aux côtés d'autres internautes !</h2>
+			<button id="gif_button">GIF</button>
+			<label for="gif_button">Powered by Tenor</label>
+			<ul id="gif_list">
+
+			</ul>
 		</section>
 	</main>
 	

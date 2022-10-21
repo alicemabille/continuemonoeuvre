@@ -45,6 +45,8 @@
             </div>
 		</section>
         <script src="scripts/creation-dessin.js"></script>
+
+        
 	</main>
 	
 	<?php include "include/footer.inc.php"; ?>

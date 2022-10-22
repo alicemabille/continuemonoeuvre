@@ -1,4 +1,4 @@
-
+import "secret.js";
 
 /* document.getElementById("style_button").innerHTML = "<img src=\"images/light_mode.svg\"/>";
 
@@ -50,7 +50,6 @@ $("#giphy_button").click(function() {
 
 
 //          TENOR GIFS
-const TENOR_API_KEY = "AIzaSyBpcspYKil5YJgRWvjZVWKuvG4EjkIJ0EE";
 
 
 // url Async requesting function

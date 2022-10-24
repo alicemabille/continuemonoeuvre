@@ -8,9 +8,9 @@
 	<main>
 		<section class="container">
 			<h2>Poste un texte et laisse les autres le continuer ! Ajoute ton grain de sel et crée des œuvres aux côtés d'autres internautes !</h2>
-			<article>
-				<h3 class="text-info row col-12 bg-dark text-white">GIF Powered by Tenor</h3>
-				<div class="row">
+			<article class="container-fluid">
+				<h3 class="text-info row col-12 p-3 bg-dark text-white">GIF Powered by Tenor</h3>
+				<div class="row col-12">
 					<button id="featured_gif_button" class="btn btn-dark dropdown col m-1">À la une</button>
 					<input type="text" id="search_gif_input" class="col m-1"/>
 					<button id="search_gif_button" class="btn btn-dark col m-1">Rechercher</button>

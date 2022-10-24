@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html lang="fr">
-	<head>
-        <meta charset="utf-8" />
-		<title>Continue mon &oelig;uvre - inscription</title>
-		<meta name="author" content="alice mabille"/>
-		<link rel="stylesheet" href="style.css">
-		<link rel="icon" type="image/ico" href="favicon.ico"/>
-	</head>
-	
-	<body>
-		<?php include "include/header.inc.php"; ?>
+<?php 
+    $titre = "inscription";
+    include "include/header.inc.php"; 
+?>
 	<main>
         <section><h2>Inscription</h2>
             <form id="signup_field">

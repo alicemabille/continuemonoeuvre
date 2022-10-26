@@ -9,7 +9,18 @@ footer{
     margin-bottom:0;
 }
 
+#gif-board {
+    max-height : 500px;
+}
+
 #gif-list {
-    height : 450px;
+    max-height : 450px;
     overflow-y : auto;
+}
+
+.novel {
+    height : 70vh;
+    overflow-y : auto;
+    padding : 16px;
+    margin : 16px;
 }

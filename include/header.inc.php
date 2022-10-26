@@ -21,7 +21,7 @@
   <header>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 		<!-- Logo -->
-		<a href="index.php" class="navbar-brand"><img src="images/logo.png" alt="Continue mon &oelig;uvre" id="logo-header" class="rounded" style="width:50px;"/></a>
+		<a href="index.php" class="navbar-brand"><img src="images/logo.png" alt="Continue mon &oelig;uvre" id="logo-header" class="rounded" style="width:50px;"/>	Continue mon &oelig;uvre</a>
 		<!-- Navbar links -->
 		<ul class="navbar-nav">
 			<li class="nav-item" id="signin-nav-item"><a class="nav-link <?php active_page("connexion.php");?>" href="connexion.php">Se connecter</a></li>
@@ -29,5 +29,4 @@
 			<!-- <li class="nav-item" id="color-mode-button"><button class="nav-link" id="style_button"></button></li> -->
       	</ul>
     </nav>
-    <h1>Continue mon &oelig;uvre</h1>
   </header>

@@ -8,7 +8,16 @@
 	<main>
 		<section class="container">
 			<h2>Poste un texte et laisse les autres le continuer ! Ajoute ton grain de sel et crée des œuvres aux côtés d'autres internautes !</h2>
-			<?php include "include/gif-board.php"; ?>
+		</section>
+		<section class="container row">
+			<h2>Derniers textes complétés</h2>
+			<?php 
+				echo txt_preview("fallen","novel"); 
+				echo txt_preview("haikus","poem");
+			?>
+			<article>
+				<?php include "include/gif-board.inc.php"; ?>
+			</article>
 		</section>
 	</main>
 	

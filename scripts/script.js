@@ -20,27 +20,20 @@ document.getElementById("signup_form").addEventListener('change',function(){
 //          TENOR GIFS
 
 $("#featured_gif_button").click(function() {
-    $("#gif_list").empty();
+    $("#gif-list").empty();
     $.get(`https://tenor.googleapis.com/v2/featured?key=${TENOR_API_KEY}&client_key=continue+mon+oeuvre`, function(data, status){
-        for(let i=0;i<data.results.length/3;i++){
-            $("#gif_list_1").append(`<div class="preview_gif col-6 m-1 "><img src="${data.results[i].media_formats.tinygif.url}" class="rounded img-fluid" /></div>`);
-        }
-        for(let i=data.results.length/3;i<data.results.length*2/3;i++){
-            $("#gif_list_2").append(`<div class="preview_gif col-6 m-1 "><img src="${data.results[i].media_formats.tinygif.url}" class="rounded img-fluid" /></div>`);
-        }
-        for(let i=data.results.length*2/3;i<data.results.length;i++){
-            $("#gif_list_3").append(`<div class="preview_gif col-6 m-1 "><img src="${data.results[i].media_formats.tinygif.url}" class="rounded img-fluid" /></div>`);
+        for(let i=0;i<data.results.length;i+=2){
+            $("#gif-list").append(`<div class="preview_gif col-5 m-1 "><img src="${data.results[i].media_formats.tinygif.url}" class="rounded img-fluid" /><img src="${data.results[i+1].media_formats.tinygif.url}" class="rounded img-fluid" /></div>`);
         }
     });
 });
 
 $("#search_gif_button").click(function() {
-    $("#gif_list").empty();
+    $("#gif-list").empty();
     var q = $("#search_gif_input").val();
-    console.log(q);
     $.get(`https://tenor.googleapis.com/v2/search?key=${TENOR_API_KEY}&client_key=continue+mon+oeuvre&q=${q}`, function(data, status){
-        for(let i=0;i<data.results.length;i++){
-            $("#gif_list").append(`<div class=\"preview_gif col m-1\"><img src="${data.results[i].media_formats.tinygif.url}" class="rounded img-fluid" /></div>`);
+        for(let i=0;i<data.results.length;i+=2){
+            $("#gif-list").append(`<div class=\"preview_gif col-5 m-1\"><img src="${data.results[i].media_formats.tinygif.url}" class="rounded img-fluid" /><img src="${data.results[i+1].media_formats.tinygif.url}" class="rounded img-fluid" /></div>`);
         }
     });
 });

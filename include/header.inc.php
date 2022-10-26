@@ -6,6 +6,7 @@
 	<meta name="author" content="alice mabille"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/ico" href="favicon.ico"/>
+	<link rel="stylesheet" href="style.css" />
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" />
 	<!-- jQuery library -->

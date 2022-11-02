@@ -90,4 +90,15 @@ function txt_preview(string $filename, ?string $category="novel") : string {
     return $txt;
 }
 
+function modif_db_ddl(string $requests) {
+    require('../conf/connexionbd.conf.php');
+
+    $mysqli = new mysqli($host, $username, $password, $database, $port);
+    $result = $mysqli->multi_query($requests);
+    if (!$result) {
+        echo $mysqli->error;
+    }
+    $mysqli->close();
+}
+
 ?>

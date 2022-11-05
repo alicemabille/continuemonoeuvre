@@ -97,6 +97,8 @@ function check_signup() : void{
                         <h1>Bonjour ".$username." !</h1>
                         <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
                         <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
+                        <p>Pour confirmer votre inscription, cliquez sur le lien suivant : </p>
+                        <a href='continuemonoeuvre.alwaysdata.net?user=". urlencode($username) ."&key=". urlencode($verifKey) ."'>lien</a>
                         <p>À bientôt !</p>
                     </body>
                 </html>";

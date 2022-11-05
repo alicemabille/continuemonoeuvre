@@ -17,16 +17,39 @@ function active_page(string $page) : void{
 function check_signup() : void{
     if(isset($_POST["username"])&&(!empty($_POST["username"]))
     &&isset($_POST["email"])&&(!empty($_POST["email"]))
+    &&isset($_POST["tel"])&&(!empty($_POST["tel"]))
     &&isset($_POST["birthdate"])&&(!empty($_POST["birthdate"]))
     &&isset($_POST["password"])&&(!empty($_POST["password"]))
     &&isset($_POST["password-confirm"])&&(!empty($_POST["password-confirm"])))
     {
         if($_POST["password"] == $_POST["password-confirm"]){
             $username = $_POST["username"];
+<<<<<<< Updated upstream
             $email = $_POST["email"];
             $birthdate = $_POST["birthdate"];
             $password = $_POST["password"];
 
+=======
+            $user_email = $_POST["email"];
+            $user_tel = $_POST["tel"];
+            $birthdate = $_POST["birthdate"];
+            $password = $_POST["password"];
+
+            // Vérification des champs ici
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            spl_autoload_register(function ($classe) {
+                include('../classes'. $classe .'.class.php');
+            });
+
+            $user = new Utilisateur($username, $user_email, $user_tel, $birthdate, $hashedPassword);
+            $verifKey = $user->__getCleVerification();
+
+            // intégrer lien dans l'email avec username et la clé de vérification
+            // ce lien envoie sur une page qui active le compte dans la bd avec l'attribut compteActifUtilisateur
+
+            /*
+>>>>>>> Stashed changes
             // To send HTML mail, the Content-type header must be set
             $headers[] = 'MIME-Version: 1.0';
             $headers[] = 'Content-type: text/html; charset=utf-8';

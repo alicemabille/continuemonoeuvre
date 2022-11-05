@@ -1,5 +1,13 @@
 <?php 
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+require_once 'phpmailer/Exception.php';
+require_once 'phpmailer/PHPMailer.php';
+require_once 'phpmailer/SMTP.php';
+
 /**
  * Echos "active" if the page passed as a parameter is the current page. Useful with bootstrap for a cool nav menu.
  * @param page : the page you want to know is active or not.
@@ -37,10 +45,11 @@ function check_signup() : void{
 
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             spl_autoload_register(function ($classe) {
-                include('../classes'. $classe .'.class.php');
+                include('classes/'. $classe .'.class.php');
             });
 
             $user = new Utilisateur($username, $user_email, $user_tel, $birthdate, $hashedPassword);
+            $user->addToDatabase();
             $verifKey = $user->__getCleVerification();
 
             // intégrer lien dans l'email avec username et la clé de vérification
@@ -98,7 +107,7 @@ function check_signup() : void{
                         <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
                         <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
                         <p>Pour confirmer votre inscription, cliquez sur le lien suivant : </p>
-                        <a href='continuemonoeuvre.alwaysdata.net?user=". urlencode($username) ."&key=". urlencode($verifKey) ."'>lien</a>
+                        <a href='continuemonoeuvre.alwaysdata.net/verification.php?user=". urlencode($username) ."&key=". urlencode($verifKey) ."'>lien</a>
                         <p>À bientôt !</p>
                     </body>
                 </html>";

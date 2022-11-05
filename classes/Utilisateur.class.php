@@ -34,7 +34,7 @@
             $res = false;
             $mysqli = $this->connectionToDatabase();
             $query = "
-                INSERT INTO utilisateur(nom_utilisateur, mail_utilisateur, num_tel_utilisateur, naissance_utilisateur, mdp_chiff_utilisateur)
+                INSERT INTO utilisateur(nom_utilisateur, mail_utilisateur, num_tel_utilisateur, naissance_utilisateur, mdp_chiff_utilisateur, cle_verification_utilisateur, compte_actif_utilisateur)
                     VALUES ('". $this->nomUtilisateur ."', '". $this->mailUtilisateur ."', '". $this->numTelUtilisateur ."', '". $this->naissanceUtilisateur ."', '".$this->mdpChiffUtilisateur ."', '". $this->cleVerificationUtilisateur ."', '". $this->compteActifUtilisateur ."');
             ";
             $result = $mysqli->query($query);

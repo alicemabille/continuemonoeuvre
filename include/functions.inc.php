@@ -151,6 +151,37 @@ function txt_preview(string $filename, ?string $category="novel") : string {
     return $txt;
 }
 
+/**
+ * Transforms full given .txt file into a pretty html piece of code. To be used when user is connected.
+ * @param filename : name of the file containing the text to display, without ".html".
+ * @param category : novel or poem. Will change the way paragraphs are defined.
+ * @return string html containing full story
+ */
+function txt_full(string $filename, ?string $category="novel") : string {
+    $filepath = "text-examples/".$filename.".txt";
+    if(file_exists($filepath)){
+        $txt = file_get_contents($filepath);
+        $txt = "<p>".$txt;
+        if($category=="novel"){
+            $txt = str_replace("\n\n","</p><p>",$txt);
+            $alignment = "left";
+        }
+        else if($category=="poem"){
+            $txt = str_replace("\n\n","</p><p>",$txt);
+            $txt = str_replace("\n","</br>",$txt);
+            $alignment = "center";
+        }
+        else{
+            return "Unknown text category.";
+        }
+        $txt = "<article class=\" text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
+            ucfirst($filename)."</h3>\n\t\t\t\t"
+            .$txt."...</p> \n\t\t\t </article> \n";
+        return $txt;
+    }
+    return "Ce texte n'existe pas.";
+}
+
 function modif_db_ddl(string $requests) {
     require('../conf/connexionbd.conf.php');
 

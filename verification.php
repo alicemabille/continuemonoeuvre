@@ -20,7 +20,7 @@
             SELECT COUNT(*) FROM utilisateur WHERE nom_utilisateur='". $user ."';
         ";
         $result1 = $mysqli->query($query1);
-        $occurence = $result1->nom_rows;
+        $occurence = $result1;
         if ($occurence == 1) {
             $query2 = "
                 SELECT * FROM utilisateur WHERE nom_utilisateur='". $user ."';
@@ -33,6 +33,7 @@
                     $query3 = "
                         UPDATE utilisateur SET compte_actif_utilisateur=true WHERE nom_utilisateur='". $user ."';
                     ";
+                    $mysqli->query($query3);
                 } else {
                     $response = "Erreur : La clé d'activation est invalide !";
                 }

@@ -13,7 +13,9 @@ function active_page(string $page) : void{
     }
 }
 
-
+/**
+ * 
+ */
 function check_signup() : void{
     if(isset($_POST["username"])&&(!empty($_POST["username"]))
     &&isset($_POST["email"])&&(!empty($_POST["email"]))
@@ -23,13 +25,9 @@ function check_signup() : void{
     &&isset($_POST["password-confirm"])&&(!empty($_POST["password-confirm"])))
     {
         if($_POST["password"] == $_POST["password-confirm"]){
+            require_once "config-mail.inc.php";
+            
             $username = $_POST["username"];
-<<<<<<< Updated upstream
-            $email = $_POST["email"];
-            $birthdate = $_POST["birthdate"];
-            $password = $_POST["password"];
-
-=======
             $user_email = $_POST["email"];
             $user_tel = $_POST["tel"];
             $birthdate = $_POST["birthdate"];
@@ -49,11 +47,9 @@ function check_signup() : void{
             // ce lien envoie sur une page qui active le compte dans la bd avec l'attribut compteActifUtilisateur
 
             /*
->>>>>>> Stashed changes
             // To send HTML mail, the Content-type header must be set
             $headers[] = 'MIME-Version: 1.0';
             $headers[] = 'Content-type: text/html; charset=utf-8';
-
             // Additional headers
             $headers[] = 'To:<'.$email.'>';
             $headers[] = 'From: Continue Mon Œuvre <no-reply@continuemonoeuvre.alwaysdata.net>';
@@ -65,19 +61,61 @@ function check_signup() : void{
                 </head>
                 <body>
                     <h1>Bonjour ".$username." !</h1>
-                    <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>. Votre mot de passe est : ".$password.".</p> 
+                    <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
                     <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
                     <p>À bientôt !</p>
                 </body>
             </html>";
+            mail($email, "Bienvenue sur Continue Mon Œuvre", $message, implode("\r\n", $headers));*/
+            try {
+                // SMTP configuration
+                $mailer = new PHPMailer(true); // true enables Exception
+                //$mailer->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
+                $mailer->isSMTP();
+                $mailer->CharSet = "utf-8";
+                $mailer->Host = $mail_host;
+                $mailer->Port = $mail_port;
+                $mailer->SMTPAuth = true; // just try false to see Exception
+                $mailer->Username = $mail_username;
+                $mailer->Password = $mail_password;
+                $mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
 
-            mail($email, "Bienvenue sur Continue Mon Œuvre", $message, implode("\r\n", $headers));
+                // the mail
+                $mailer->setFrom($mail_username, 'Continue mon œuvre');
+                $mailer->addReplyTo($mail_username, 'Your WebSite Contact');
+                $mailer->addAddress($user_email, $username); // le destinataire
+                $mailer->addCC($mail_username, 'webmaster');
+                // $mailer->addBCC($mail_username, 'webmaster');
+                $mailer->Subject = 'Bienvenue sur Continue Mon Œuvre';
+                $mailer->isHTML(true);
+                $mailContent =
+                "<html>
+                    <head>
+                        <title>Bienvenue sur Continue mon œuvre</title>
+                    </head>
+                    <body>
+                        <h1>Bonjour ".$username." !</h1>
+                        <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
+                        <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
+                        <p>À bientôt !</p>
+                    </body>
+                </html>";
+                $mailer->Body = $mailContent;
+                // $mail->msgHTML(file_get_contents('contents.html'), __DIR__);
+                // $mail->addAttachment('path/to/file.pdf', 'file.pdf');
+                $mailer->send();
+            } catch (Exception $e) {
+                echo 'Message could not be sent.';
+                echo 'Mailer Error: ' . $mailer->ErrorInfo;
+            }
         }
         else{
             echo "<p id='password-warning' class='alert alert-warning mt-3'>Les deux mots de passe entrés ne sont pas identiques.</p>";
         }
     }
 }
+
+
 
 const MAX_TXT_PREVIEW_LENGTH = 1000;
 const MAX_POEM_LENGTH = 20;

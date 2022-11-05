@@ -16,11 +16,13 @@ CREATE TABLE theme(
     CONSTRAINT theme_pk PRIMARY KEY (theme)
 );
 CREATE TABLE utilisateur(
-nom_utilisateur VARCHAR(15),
-mail_utilisateur VARCHAR(50),
+    nom_utilisateur VARCHAR(15),
+    mail_utilisateur VARCHAR(50),
     num_tel_utilisateur CHAR(10),
     naissance_utilisateur DATE,
     mdp_chiff_utilisateur VARCHAR(100),
+    cle_verification_utilisateur CHAR(32),
+    compte_actif_utilisateur BOOLEAN DEFAULT false;
     CONSTRAINT utilisateur_pk PRIMARY KEY (nom_utilisateur)
 );
 CREATE TABLE ecrire(

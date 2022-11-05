@@ -15,9 +15,6 @@
 				echo txt_preview("fallen","novel"); 
 				echo txt_preview("haikus","poem");
 			?>
-			<article>
-				<?php include "include/gif-board.inc.php"; ?>
-			</article>
 		</section>
 	</main>
 	

@@ -21,7 +21,7 @@
         }
 
         private function connectionToDatabase():object {
-            require('connexionbd.conf.php');
+            require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             return $mysqli;
         }

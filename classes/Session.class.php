@@ -1,11 +1,11 @@
 <?php
     class Session {
         private string $nomUtilisateur;
-        private string $mdpChiffUtilisateur;
+        private string $mdpUtilisateur;
 
-        public function __construct(string $nomUtilisateur, string $mdpChiffUtilisateur) {
+        public function __construct(string $nomUtilisateur, string $mdpUtilisateur) {
             $this->nomUtilisateur = $nomUtilisateur;
-            $this->mdpChiffUtilisateur = $mdpChiffUtilisateur;
+            $this->mdpUtilisateur = $mdpUtilisateur;
         }
 
         public static function is_connected():string {
@@ -15,20 +15,23 @@
         public function connection():bool {
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
-
             $query = "
-                SELECT mdp_chiff_utilisateur FROM utilisateur WHERE nom_utilisateur='". $nomUtilisateur ."';
+                SELECT mdp_chiff_utilisateur FROM utilisateur WHERE nom_utilisateur='". $this->nomUtilisateur ."';
             ";
             $result = $mysqli->query($query);
-            $result->data_seek(0);
-            $mdp = $result->fetch_assoc();
-            $mdp = $mdp["mdp_chiff_utilisateur"];
-            // bug aussi -> renvoie toujours faux
-            return password_verify($mdpChiffUtilisateur, $mdp);
+            $fetch = $result->fetch_row();
+            $mdp = $fetch[0];
+                        
+            $mysqli->close();
+            return password_verify($this->mdpUtilisateur, $mdp);
         }
 
         public function __getNomUtilisateur():string {
             return $this->nomUtilisateur;
+        }
+
+        public function __getMdpUtilisateur():string {
+            return $this->mdpUtilisateur;
         }
     }
 ?>

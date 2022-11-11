@@ -138,6 +138,8 @@ function check_signin() {
             $_SESSION['session'] = true;
             // Redirection vers la page d'accueil
             header("Location: index.php");
+        } else {
+            echo "Mot de passe incorrect";
         }
     }
 }

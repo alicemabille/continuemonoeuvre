@@ -26,6 +26,19 @@
             return password_verify($this->mdpUtilisateur, $mdp);
         }
 
+        public function is_active_account():bool {
+            require('conf/connexionbd.conf.php');
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "
+                SELECT compte_actif_utilisateur FROM utilisateur WHERE nom_utilisateur='". $this->nomUtilisateur ."';
+            ";
+            $result = $mysqli->query($query);
+            $fetch = $result->fetch_row();
+            $active = $fetch[0];
+            $mysqli->close();
+            return $active;
+        }
+
         public function __getNomUtilisateur():string {
             return $this->nomUtilisateur;
         }

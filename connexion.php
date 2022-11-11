@@ -9,9 +9,12 @@
                 <input name="username" type="text" id="username_input" class="signin_form_field"/>
                 <label for="password_input">Mot de passe : </label>
                 <input name="password" type="password" id="password_input" class="signin_form_field"/>
-                <?php check_signin(); ?>
+                <?php $return = check_signin(); ?>
 				<input type="submit"  id="submit_button"/>
             </form>
+            <?php
+                echo "<p>". $return ."</p>";
+            ?>
         </section>
 	</main>
 	

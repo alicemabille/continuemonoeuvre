@@ -126,6 +126,22 @@ function check_signup() : void{
     }
 }
 
+function check_signin() {
+    if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['password']) && !empty($_POST['password'])) {
+        spl_autoload_register(function ($classe) {
+            include('classes/'. $classe .'.class.php');
+        });
+        $session = new Session($_POST['username'], $_POST['password']);
+        if ($session->connection()) {
+            // Nom utilisateur et mot de passe corect
+            $_SESSION['username'] = $_POST['username'];
+            $_SESSION['session'] = true;
+            // Redirection vers la page d'accueil
+            header("Location: index.php");
+        }
+    }
+}
+
 
 
 const MAX_TXT_PREVIEW_LENGTH = 1000;

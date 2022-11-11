@@ -53,6 +53,7 @@
 
         public function check_username():bool {
             $res = false;
+            $err = "";
             if (strlen($this->nomUtilisateur) >= 5 && strlen($this->nomUtilisateur) <= 20) {
                 if (ctype_alnum($this->nomUtilisateur)) {
                     $mysqli = $this->connectionToDatabase();
@@ -64,34 +65,54 @@
                     $mysqli->close();
                     if ($fetch[0] == 0) {
                         $res = true;
+                    } else {
+                        $err = "<b>Ce nom est déjà pris par un autre utilisateur.</b>";
                     }
+                } else {
+                    $err = "<b>Votre nom d'utilisateur ne peut contenir que des caractères alphanumériques.</b>";
                 }
+            } else {
+                $err = "<b>Votre nom d'utilisateur doit contenir entre 5 et 20 caractères.</b>";
             }
+            echo $err;
             return $res;
         }
 
         public function check_mail():bool {
             $res = false;
+            $err = "";
             if (filter_var($this->mailUtilisateur, FILTER_VALIDATE_EMAIL)) {
                 $res = true;
+            } else {
+                $err = "<b>Votre adresse mail est invalide.</b>";
             }
+            echo $err;
             return $res;
         }
 
         public function check_num():bool {
             $res = false;
+            $err = "";
             if (strlen($this->numTelUtilisateur) == 10) {
                 if (ctype_digit($this->numTelUtilisateur)) {
                     if (substr($this->numTelUtilisateur, 0, 2) == "06" || substr($this->numTelUtilisateur, 0, 2) == "07") {
                         $res = true;
+                    } else {
+                        $err = "<b>Votre numéro de téléphone est invalide</b>";
                     }
+                } else {
+                    $err = "<b>Votre numéro de téléphone ne peut contenir que des chiffres.</b>";
                 }
+            } else {
+                $err = "<b>Votre numéro de téléphone doit être composé de 10 chiffres.</b>";
             }
+            echo $err;
             return $res;
         }
 
         public function check_naissance():bool {
             $res = false;
+            $err = "";
             $format = "Y-m-d"; // AAAA-MM-JJ
             $date = date($format);
             $date100 = date($format, strtotime("-100 years"));
@@ -101,27 +122,42 @@
                 if ($this->naissanceUtilisateur < $date) { // naissance < aujourd'hui
                     if ($this->naissanceUtilisateur > $date100) { // naissance > 100 ans avant
                         $res = true;
+                    } else {
+                        $err = "<b>Votre date de naissance est invalide.</b>";
                     }
+                } else {
+                    $err = "<b>Votre date de naissance est invalide.</b>";
                 }
+            } else {
+                $err = "<b>Format de date invalide.</b>";
             }
+            echo $err;
             return $res;
         }
 
         public function check_mdp():bool {
             $res = false;
+            $err = "";
             if (strlen($this->mdpUtilisateur) >= 8) { // minimum 8 caractères
                 if (preg_match('/[a-z]/', $this->mdpUtilisateur)) { // au moins 1 min
                     if (preg_match('/[A-Z]/', $this->mdpUtilisateur)) { // au moins 1 MAJ
                         if (preg_match('/[0-9]/', $this->mdpUtilisateur)) { // au moins 1 chiffre 
                             $res = true;
+                        } else {
+                            $err = "<b>Votre mot de passe doit contenir au moins 1 chiffre.</b>";
                         }
+                    } else {
+                        $err = "<b>Votre mot de passe doit contenir au moins 1 majuscule.</b>";
                     }
+                } else {
+                    $err = "<b>Votre mot de passe doit contenir au moins 1 minuscule.</b>";
                 }
+            } else {
+                $err = "<b>Votre mot de passe doit contenir au moins 8 caractères.</b>";
             }
+            echo $err;
             return $res;
         }
-
-
 
         public function __getNom():string {
             return $this->nomUtilisateur;

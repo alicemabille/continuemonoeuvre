@@ -4,11 +4,12 @@
 ?>
 	<main>
         <section><h2>Connexion</h2>
-            <form id="signin_form">
+            <form id="signin_form" method="post">
                 <label for="username_input">Nom d'utilisateur : </label>
-                <input type="text" id="username_input" class="signin_form_field"/>
+                <input name="username" type="text" id="username_input" class="signin_form_field"/>
                 <label for="password_input">Mot de passe : </label>
-                <input type="password" id="password_input" class="signin_form_field"/>
+                <input name="password" type="password" id="password_input" class="signin_form_field"/>
+                <?php check_signin(); ?>
 				<input type="submit"  id="submit_button"/>
             </form>
         </section>

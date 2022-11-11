@@ -12,12 +12,14 @@ require_once 'phpmailer/SMTP.php';
  * Echos "active" if the page passed as a parameter is the current page. Useful with bootstrap for a cool nav menu.
  * @param page : the page you want to know is active or not.
  */
-function active_page(string $page) : void{
+function active_page(string $page) : string{
     $uri = $_SERVER['REQUEST_URI'];
     $uri_arr = explode("?",$uri);
     $current_page = $uri_arr[0];
     if($current_page=="/".$page){
-        echo "active";
+        return "active";
+    } else {
+        return "";
     }
 }
 
@@ -43,81 +45,80 @@ function check_signup() : void{
 
             // Vérification des champs ici
 
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             spl_autoload_register(function ($classe) {
                 include('classes/'. $classe .'.class.php');
             });
 
-            $user = new Utilisateur($username, $user_email, $user_tel, $birthdate, $hashedPassword);
-            $user->addToDatabase();
-            $verifKey = $user->__getCleVerification();
-
-            // intégrer lien dans l'email avec username et la clé de vérification
-            // ce lien envoie sur une page qui active le compte dans la bd avec l'attribut compteActifUtilisateur
-
-            /*
-            // To send HTML mail, the Content-type header must be set
-            $headers[] = 'MIME-Version: 1.0';
-            $headers[] = 'Content-type: text/html; charset=utf-8';
-            // Additional headers
-            $headers[] = 'To:<'.$email.'>';
-            $headers[] = 'From: Continue Mon Œuvre <no-reply@continuemonoeuvre.alwaysdata.net>';
+            $user = new Utilisateur($username, $user_email, $user_tel, $birthdate, $password);
             
-            $message = "
-            <html>
-                <head>
-                    <title>Bienvenue sur Continue Mon Œuvre</title>
-                </head>
-                <body>
-                    <h1>Bonjour ".$username." !</h1>
-                    <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
-                    <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
-                    <p>À bientôt !</p>
-                </body>
-            </html>";
-            mail($email, "Bienvenue sur Continue Mon Œuvre", $message, implode("\r\n", $headers));*/
-            try {
-                // SMTP configuration
-                $mailer = new PHPMailer(true); // true enables Exception
-                //$mailer->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
-                $mailer->isSMTP();
-                $mailer->CharSet = "utf-8";
-                $mailer->Host = $mail_host;
-                $mailer->Port = $mail_port;
-                $mailer->SMTPAuth = true; // just try false to see Exception
-                $mailer->Username = $mail_username;
-                $mailer->Password = $mail_password;
-                $mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            if ($user->check_username() && $user->check_mail() && $user->check_num() && $user->check_naissance() && $user->check_mdp()) {
+                $user->addToDatabase();
+                $verifKey = $user->__getCleVerification();
 
-                // the mail
-                $mailer->setFrom($mail_username, 'Continue mon œuvre');
-                $mailer->addReplyTo($mail_username, 'Your WebSite Contact');
-                $mailer->addAddress($user_email, $username); // le destinataire
-                $mailer->addCC($mail_username, 'webmaster');
-                // $mailer->addBCC($mail_username, 'webmaster');
-                $mailer->Subject = 'Bienvenue sur Continue Mon Œuvre';
-                $mailer->isHTML(true);
-                $mailContent =
-                "<html>
+                /*
+                // To send HTML mail, the Content-type header must be set
+                $headers[] = 'MIME-Version: 1.0';
+                $headers[] = 'Content-type: text/html; charset=utf-8';
+                // Additional headers
+                $headers[] = 'To:<'.$email.'>';
+                $headers[] = 'From: Continue Mon Œuvre <no-reply@continuemonoeuvre.alwaysdata.net>';
+                
+                $message = "
+                <html>
                     <head>
-                        <title>Bienvenue sur Continue mon œuvre</title>
+                        <title>Bienvenue sur Continue Mon Œuvre</title>
                     </head>
                     <body>
                         <h1>Bonjour ".$username." !</h1>
                         <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
                         <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
-                        <p>Pour confirmer votre inscription, cliquez sur le lien suivant : </p>
-                        <a href='continuemonoeuvre.alwaysdata.net/verification.php?user=". urlencode($username) ."&key=". urlencode($verifKey) ."'>lien</a>
                         <p>À bientôt !</p>
                     </body>
                 </html>";
-                $mailer->Body = $mailContent;
-                // $mail->msgHTML(file_get_contents('contents.html'), __DIR__);
-                // $mail->addAttachment('path/to/file.pdf', 'file.pdf');
-                $mailer->send();
-            } catch (Exception $e) {
-                echo 'Message could not be sent.';
-                echo 'Mailer Error: ' . $mailer->ErrorInfo;
+                mail($email, "Bienvenue sur Continue Mon Œuvre", $message, implode("\r\n", $headers));*/
+                try {
+                    // SMTP configuration
+                    $mailer = new PHPMailer(true); // true enables Exception
+                    //$mailer->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
+                    $mailer->isSMTP();
+                    $mailer->CharSet = "utf-8";
+                    $mailer->Host = $mail_host;
+                    $mailer->Port = $mail_port;
+                    $mailer->SMTPAuth = true; // just try false to see Exception
+                    $mailer->Username = $mail_username;
+                    $mailer->Password = $mail_password;
+                    $mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+
+                    // the mail
+                    $mailer->setFrom($mail_username, 'Continue mon œuvre');
+                    $mailer->addReplyTo($mail_username, 'Your WebSite Contact');
+                    $mailer->addAddress($user_email, $username); // le destinataire
+                    $mailer->addCC($mail_username, 'webmaster');
+                    // $mailer->addBCC($mail_username, 'webmaster');
+                    $mailer->Subject = 'Bienvenue sur Continue Mon Œuvre';
+                    $mailer->isHTML(true);
+                    $mailContent =
+                    "<html>
+                        <head>
+                            <title>Bienvenue sur Continue mon œuvre</title>
+                        </head>
+                        <body>
+                            <h1>Bonjour ".$username." !</h1>
+                            <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
+                            <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
+                            <p>Pour confirmer votre inscription, cliquez sur le lien suivant : </p>
+                            <a href='continuemonoeuvre.alwaysdata.net/verification.php?user=". urlencode($username) ."&key=". urlencode($verifKey) ."'>lien</a>
+                            <p>À bientôt !</p>
+                        </body>
+                    </html>";
+                    $mailer->Body = $mailContent;
+                    // $mail->msgHTML(file_get_contents('contents.html'), __DIR__);
+                    // $mail->addAttachment('path/to/file.pdf', 'file.pdf');
+                    $mailer->send();
+                } catch (Exception $e) {
+                    echo 'Message could not be sent.';
+                    echo 'Mailer Error: ' . $mailer->ErrorInfo;
+                }
             }
         }
         else{
@@ -127,21 +128,30 @@ function check_signup() : void{
 }
 
 function check_signin() {
+    $err = "";
     if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['password']) && !empty($_POST['password'])) {
         spl_autoload_register(function ($classe) {
             include('classes/'. $classe .'.class.php');
         });
         $session = new Session($_POST['username'], $_POST['password']);
+
         if ($session->connection()) {
-            // Nom utilisateur et mot de passe corect
-            $_SESSION['username'] = $_POST['username'];
-            $_SESSION['session'] = true;
-            // Redirection vers la page d'accueil
-            header("Location: index.php");
+            // Nom utilisateur + mdp corrects
+            if ($session->is_active_account()) {
+                // Le compte a été validé par mail
+                $_SESSION['username'] = $_POST['username'];
+                $_SESSION['session'] = true;
+
+                // Redirection vers la page d'accueil
+                header("Location: index.php");
+            } else {
+                $err = "Veuillez confirmer votre inscription dans le mail que nous vous avons envoyé avant de vous connecter";
+            }
         } else {
-            echo "Mot de passe incorrect";
+            $err = "Nom d'utilisateur ou mot de passe incorrect";
         }
     }
+    return $err;
 }
 
 

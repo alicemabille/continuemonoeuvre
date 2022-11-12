@@ -41,29 +41,6 @@ function check_signup() : void{
             $birthdate = $_POST["birthdate"];
             $password = $_POST["password"];
 
-            /*
-            // To send HTML mail, the Content-type header must be set
-            $headers[] = 'MIME-Version: 1.0';
-            $headers[] = 'Content-type: text/html; charset=utf-8';
-
-            // Additional headers
-            $headers[] = 'To:<'.$email.'>';
-            $headers[] = 'From: Continue Mon Œuvre <no-reply@continuemonoeuvre.alwaysdata.net>';
-            
-            $message = "
-            <html>
-                <head>
-                    <title>Bienvenue sur Continue Mon Œuvre</title>
-                </head>
-                <body>
-                    <h1>Bonjour ".$username." !</h1>
-                    <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
-                    <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
-                    <p>À bientôt !</p>
-                </body>
-            </html>";
-
-            mail($email, "Bienvenue sur Continue Mon Œuvre", $message, implode("\r\n", $headers));*/
             try {
                 // SMTP configuration
                 $mailer = new PHPMailer(true); // true enables Exception

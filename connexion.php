@@ -15,8 +15,12 @@
                     <input name="password" type="password" id="password_input" class="signup_form form-control" maxlength="30" required/>
                     <p class="invalid-feedback">Veuillez compléter ce champ.</p>
                 </fieldset>
+        <?php $return = check_signin(); ?>
 				<button type="submit" class="signin_form btn btn-primary my-3" id="submit_button">Se connecter</button>
             </form>
+            <?php
+                echo "<p>". $return ."</p>";
+            ?>
         </section>
 	</main>
 	

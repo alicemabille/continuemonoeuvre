@@ -4,28 +4,24 @@
         private string $mailUtilisateur;
         private string $numTelUtilisateur;
         private string $naissanceUtilisateur;
-        private string $mdpChiffUtilisateur;
+        private string $mdpUtilisateur;
+        private string $cleVerificationUtilisateur;
+        private bool $compteActifUtilisateur;
 
-        public function __construct(string $nomUtilisateur, string $mailUtilisateur, string $numTelUtilisateur, string $naissanceUtilisateur, string $mdpChiffUtilisateur) {
-            // Nom d'utilisateur entre 5 et 15 caractères alphanumériques
-            if (strlen($nomUtilisateur) < 15 && strlen($nomUtilisateur) > 5 && ctype_alnum($nomUtilisateur)) {
-                $this->nomUtilisateur = $nomUtilisateur;
-                // Email valide
-                if (filter_var($mailUtilisateur, FILTER_VALIDATE_EMAIL)) {
-                    $this->mailUtilisateur = $mailUtilisateur;
-                    // Numéro de téléphone compose de 10 chiffres
-                    if (strlen($numTelUtilisateur) == 10 && is_numeric($numTelUtilisateur)) {
-                        $this->numTelUtilisateur = $numTelUtilisateur;
-                        // Vérifier que la date de naissance est correcte
-                        $this->naissanceUtilisateur = $naissanceUtilisateur;
-                        $this->mdpChiffUtilisateur = $mdpChiffUtilisateur;
-                    }
-                }
-            }
+        public function __construct(string $nomUtilisateur, string $mailUtilisateur, string $numTelUtilisateur, string $naissanceUtilisateur, string $mdpUtilisateur, bool $compteActifUtilisateur = false) {
+            // Vérification au préalable de la validité des informations (nombre de caractères, adresse valide, htmlspecialchars() etc..)
+            $this->nomUtilisateur = $nomUtilisateur;
+            $this->mailUtilisateur = $mailUtilisateur;
+            $this->numTelUtilisateur = $numTelUtilisateur;
+            $this->naissanceUtilisateur = $naissanceUtilisateur;
+            $this->mdpUtilisateur = $mdpUtilisateur;
+            // Génération d'une clé de vérification à la création du compte
+            $this->cleVerificationUtilisateur = md5(microtime(TRUE) * 1000);
+            $this->compteActifUtilisateur = $compteActifUtilisateur;
         }
 
         private function connectionToDatabase():object {
-            require('connexionbd.conf.php');
+            require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             return $mysqli;
         }
@@ -36,10 +32,12 @@
          */
         public function addToDatabase():bool {
             $res = false;
+            $mdpChiffUtilisateur = password_hash($this->mdpUtilisateur, PASSWORD_DEFAULT);
+
             $mysqli = $this->connectionToDatabase();
             $query = "
-                INSERT INTO utilisateur(nom_utilisateur, mail_utilisateur, num_tel_utilisateur, naissance_utilisateur, mdp_chiff_utilisateur)
-                    VALUES ('". $this->nomUtilisateur ."', '". $this->mailUtilisateur ."', '". $this->numTelUtilisateur ."', '". $this->naissanceUtilisateur ."', '".$this->mdpChiffUtilisateur ."');
+                INSERT INTO utilisateur(nom_utilisateur, mail_utilisateur, num_tel_utilisateur, naissance_utilisateur, mdp_chiff_utilisateur, cle_verification_utilisateur, compte_actif_utilisateur)
+                    VALUES ('". $this->nomUtilisateur ."', '". $this->mailUtilisateur ."', '". $this->numTelUtilisateur ."', '". $this->naissanceUtilisateur ."', '". $mdpChiffUtilisateur ."', '". $this->cleVerificationUtilisateur ."', '". $this->compteActifUtilisateur ."');
             ";
             $result = $mysqli->query($query);
             if ($result) {
@@ -50,6 +48,114 @@
                 // echo $mysqli->errno ." : ". $mysqli->error;
             }
             $mysqli->close();
+            return $res;
+        }
+        
+        public function check_username():bool {
+            $res = false;
+            $err = "";
+            if (strlen($this->nomUtilisateur) >= 5 && strlen($this->nomUtilisateur) <= 20) {
+                if (ctype_alnum($this->nomUtilisateur)) {
+                    $mysqli = $this->connectionToDatabase();
+                    $query = "
+                        SELECT COUNT(*) FROM utilisateur WHERE nom_utilisateur='". $this->nomUtilisateur ."';
+                    ";
+                    $result = $mysqli->query($query);
+                    $fetch = $result->fetch_row();
+                    $mysqli->close();
+                    if ($fetch[0] == 0) {
+                        $res = true;
+                    } else {
+                        $err = "<b>Ce nom est déjà pris par un autre utilisateur.</b>";
+                    }
+                } else {
+                    $err = "<b>Votre nom d'utilisateur ne peut contenir que des caractères alphanumériques.</b>";
+                }
+            } else {
+                $err = "<b>Votre nom d'utilisateur doit contenir entre 5 et 20 caractères.</b>";
+            }
+            echo $err;
+            return $res;
+        }
+
+        public function check_mail():bool {
+            $res = false;
+            $err = "";
+            if (filter_var($this->mailUtilisateur, FILTER_VALIDATE_EMAIL)) {
+                $res = true;
+            } else {
+                $err = "<b>Votre adresse mail est invalide.</b>";
+            }
+            echo $err;
+            return $res;
+        }
+
+        public function check_num():bool {
+            $res = false;
+            $err = "";
+            if (strlen($this->numTelUtilisateur) == 10) {
+                if (ctype_digit($this->numTelUtilisateur)) {
+                    if (substr($this->numTelUtilisateur, 0, 2) == "06" || substr($this->numTelUtilisateur, 0, 2) == "07") {
+                        $res = true;
+                    } else {
+                        $err = "<b>Votre numéro de téléphone est invalide</b>";
+                    }
+                } else {
+                    $err = "<b>Votre numéro de téléphone ne peut contenir que des chiffres.</b>";
+                }
+            } else {
+                $err = "<b>Votre numéro de téléphone doit être composé de 10 chiffres.</b>";
+            }
+            echo $err;
+            return $res;
+        }
+
+        public function check_naissance():bool {
+            $res = false;
+            $err = "";
+            $format = "Y-m-d"; // AAAA-MM-JJ
+            $date = date($format);
+            $date100 = date($format, strtotime("-100 years"));
+            $dt = DateTime::createFromFormat($format, $this->naissanceUtilisateur);
+
+            if ($dt->format($format) == $this->naissanceUtilisateur) { // Date donnée au bon format AAAA-MM-JJ
+                if ($this->naissanceUtilisateur < $date) { // naissance < aujourd'hui
+                    if ($this->naissanceUtilisateur > $date100) { // naissance > 100 ans avant
+                        $res = true;
+                    } else {
+                        $err = "<b>Votre date de naissance est invalide.</b>";
+                    }
+                } else {
+                    $err = "<b>Votre date de naissance est invalide.</b>";
+                }
+            } else {
+                $err = "<b>Format de date invalide.</b>";
+            }
+            echo $err;
+            return $res;
+        }
+
+        public function check_mdp():bool {
+            $res = false;
+            $err = "";
+            if (strlen($this->mdpUtilisateur) >= 8) { // minimum 8 caractères
+                if (preg_match('/[a-z]/', $this->mdpUtilisateur)) { // au moins 1 min
+                    if (preg_match('/[A-Z]/', $this->mdpUtilisateur)) { // au moins 1 MAJ
+                        if (preg_match('/[0-9]/', $this->mdpUtilisateur)) { // au moins 1 chiffre 
+                            $res = true;
+                        } else {
+                            $err = "<b>Votre mot de passe doit contenir au moins 1 chiffre.</b>";
+                        }
+                    } else {
+                        $err = "<b>Votre mot de passe doit contenir au moins 1 majuscule.</b>";
+                    }
+                } else {
+                    $err = "<b>Votre mot de passe doit contenir au moins 1 minuscule.</b>";
+                }
+            } else {
+                $err = "<b>Votre mot de passe doit contenir au moins 8 caractères.</b>";
+            }
+            echo $err;
             return $res;
         }
 
@@ -69,8 +175,17 @@
             return $this->naissanceUtilisateur;
         }
 
-        public function __getMdpChiff():string {
-            return $this->mdpChiffUtilisateur;
+        public function __getMdp():string {
+            return $this->mdpUtilisateur;
+        }
+
+        public function __getCleVerification():string {
+            return $this->cleVerificationUtilisateur;
+        }
+
+        public function __getCompteActif():bool {
+            return $this->compteActifUtilisateur;
+
         }
 
         public function __setMail(string $mailUtilisateur):void {
@@ -85,8 +200,16 @@
             $this->naissanceUtilisateur = $naissanceUtilisateur;
         }
 
-        public function __setMdpChiff(string $mdpChiffUtilisateur):void {
-            $this->mdpChiffUtilisateur = $mdpChiffUtilisateur;
+        public function __setMdpChiff(string $mdpUtilisateur):void {
+            $this->mdpUtilisateur = $mdpUtilisateur;
+        }
+
+        public function __setCleVerification(string $cleVerificationUtilisateur):void {
+            $this->cleVerificationUtilisateur = $cleVerificationUtilisateur;
+        }
+
+        public function __setCompteActif(string $compteActifUtilisateur):void {
+            $this->compteActifUtilisateur = $compteActifUtilisateur;
         }
     }
 ?>

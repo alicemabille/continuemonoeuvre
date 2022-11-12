@@ -36,6 +36,7 @@
                     <?php check_signup(); ?>
                 </fieldset>
                 <button type="submit" class="signup_form btn btn-primary my-3" id="submit_button">S'inscrire</button>
+                <p>Vous avez déjà un compte ? <a href="connexion.php">Se connecter</a></p>
             </form>
         </section>
 		

@@ -5,9 +5,17 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+	<!-- necessary meta -->
     <meta charset="utf-8" />
-	<meta name="author" content="alice mabille"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- authors -->
+	<meta name="author" content="alice mabille"/>
+	<meta name="author" content="florent courtin"/>
+	<meta name="author" content="christella aristor"/>
+
+	
+
     <link rel="icon" type="image/ico" href="favicon.ico"/>
 	<link rel="stylesheet" href="style.css" />
 	<!-- Latest compiled and minified CSS -->

@@ -54,28 +54,7 @@ function check_signup() : void{
             if ($user->check_username() && $user->check_mail() && $user->check_num() && $user->check_naissance() && $user->check_mdp()) {
                 $user->addToDatabase();
                 $verifKey = $user->__getCleVerification();
-
-                /*
-                // To send HTML mail, the Content-type header must be set
-                $headers[] = 'MIME-Version: 1.0';
-                $headers[] = 'Content-type: text/html; charset=utf-8';
-                // Additional headers
-                $headers[] = 'To:<'.$email.'>';
-                $headers[] = 'From: Continue Mon Œuvre <no-reply@continuemonoeuvre.alwaysdata.net>';
                 
-                $message = "
-                <html>
-                    <head>
-                        <title>Bienvenue sur Continue Mon Œuvre</title>
-                    </head>
-                    <body>
-                        <h1>Bonjour ".$username." !</h1>
-                        <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
-                        <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
-                        <p>À bientôt !</p>
-                    </body>
-                </html>";
-                mail($email, "Bienvenue sur Continue Mon Œuvre", $message, implode("\r\n", $headers));*/
                 try {
                     // SMTP configuration
                     $mailer = new PHPMailer(true); // true enables Exception
@@ -160,35 +139,85 @@ const MAX_TXT_PREVIEW_LENGTH = 1000;
 const MAX_POEM_LENGTH = 20;
 
 /**
- * Echos php code for the preview of the given file on the homepage when no user is connected.
+ * Preview of the given file on the homepage when no user is connected.
  * @param filename : name of the file containing the text to display, without ".html".
  * @param category : novel or poem. Will change the way paragraphs are defined.
+ * @return string html containing cropped story
  */
 function txt_preview(string $filename, ?string $category="novel") : string {
-    $txt = file_get_contents("text-examples/".$filename.".txt");
-    if(strlen($txt) >  MAX_TXT_PREVIEW_LENGTH) {
-        $txt = substr($txt, 0, MAX_TXT_PREVIEW_LENGTH);
-    }
-    $txt = "<p>".$txt;
-    if($category=="novel"){
-        $txt = str_replace("\n\n","</p><p>",$txt);
-    }
-    else if($category=="poem"){
-        $nbbr = substr_count($txt,"\n");
-        if($nbbr >  MAX_POEM_LENGTH) {
-            $txt = substr($txt, 0, MAX_POEM_LENGTH*11);
+    $filepath = "text-examples/".$filename.".txt";
+    if(file_exists($filepath)){
+        $txt = file_get_contents($filepath);
+        if(strlen($txt) >  MAX_TXT_PREVIEW_LENGTH) {
+            $txt = substr($txt, 0, MAX_TXT_PREVIEW_LENGTH);
+            $alignment = "left";
         }
-        $txt = str_replace("\n\n","</p><p>",$txt);
-        $txt = str_replace("\n","</br>",$txt);
+        $txt = "<p>".$txt;
+        if($category=="novel"){
+            $txt = str_replace("\n\n","</p><p>",$txt);
+        }
+        else if($category=="poem"){
+            $nbbr = substr_count($txt,"\n");
+            if($nbbr >  MAX_POEM_LENGTH) {
+                $txt = substr($txt, 0, MAX_POEM_LENGTH*11);
+            }
+            $txt = str_replace("\n\n","</p><p>",$txt);
+            $txt = str_replace("\n","</br>",$txt);
+            $alignment = "center";
+        }
+        else{
+            return "Unknown text category.";
+        }
+        $txt = "<article class=\" text-".$alignment." text-preview col-12 col-md-5 bg-secondary text-white p-4 m-4 rounded shadow\"> \n\t\t\t\t<h3>".
+            ucfirst($filename)."</h3>\n\t\t\t\t"
+            .$txt."...</p><a href=\"lecture.php?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Lire la suite</a> \n\t\t\t </article> \n";
+        return $txt;
     }
-    else{
-        return "Unknown text category.";
-    }
-    $txt = "<article class=\"text-preview col-12 col-md-5 bg-secondary text-white p-4 m-4 rounded shadow\"> \n\t\t\t\t<h3>".
-        ucfirst($filename)."</h3>\n\t\t\t\t"
-        .$txt."...</p><a href=\"text-view.php\" class=\"btn btn-info\" role=\"button\">Lire la suite</a> \n\t\t\t </article> \n";
-    return $txt;
+    return "Ce texte n'existe pas.";
 }
+
+/**
+ * Transforms full given .txt file into a pretty html piece of code. To be used when user is connected.
+ * @param filename : name of the file containing the text to display, without ".html".
+ * @param category : novel or poem. Will change the way paragraphs are defined.
+ * @return string html containing full story
+ */
+function txt_full(string $filename, ?string $category="novel") : string {
+    $filepath = "text-examples/".$filename.".txt";
+    if(file_exists($filepath)){
+        $txt = file_get_contents($filepath);
+        $txt = "<p>".$txt;
+        if($category=="novel"){
+            $txt = str_replace("\n\n","</p><p>",$txt);
+            $alignment = "left";
+        }
+        else if($category=="poem"){
+            $txt = str_replace("\n\n","</p><p>",$txt);
+            $txt = str_replace("\n","</br>",$txt);
+            $alignment = "center";
+        }
+        else{
+            return "Unknown text category.";
+        }
+        $txt = "<article class=\" text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
+            ucfirst($filename)."</h3>\n\t\t\t\t"
+            .$txt."...</p> \n\t\t\t </article> \n";
+        return $txt;
+    }
+    return "Ce texte n'existe pas.";
+}
+
+function modif_db_ddl(string $requests) {
+    require('../conf/connexionbd.conf.php');
+
+    $mysqli = new mysqli($host, $username, $password, $database, $port);
+    $result = $mysqli->multi_query($requests);
+    if (!$result) {
+        echo $mysqli->error;
+    }
+    $mysqli->close();
+}
+
 
 /**
  * Transforms full given .txt file into a pretty html piece of code. To be used when user is connected.

@@ -50,7 +50,7 @@
             $mysqli->close();
             return $res;
         }
-
+        
         public function check_username():bool {
             $res = false;
             $err = "";
@@ -185,6 +185,7 @@
 
         public function __getCompteActif():bool {
             return $this->compteActifUtilisateur;
+
         }
 
         public function __setMail(string $mailUtilisateur):void {

@@ -17,6 +17,7 @@
                 </fieldset>
         <?php $return = check_signin(); ?>
 				<button type="submit" class="signin_form btn btn-primary my-3" id="submit_button">Se connecter</button>
+                <p>Vous n'avez pas encore de compte ? <a href="inscription.php">S'inscrire</a></p>
             </form>
             <?php
                 echo "<p>". $return ."</p>";

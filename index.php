@@ -4,7 +4,11 @@
 	}
 ?> -->
 
-<?php include "include/header.inc.php"; ?>
+<?php 
+	$type = "website";
+	$titre = "Accueil";
+	include "include/header.inc.php"; 
+?>
 	<main>
 		<section class="container">
 			<h2>Poste un texte et laisse les autres le continuer ! Ajoute ton grain de sel et crée des œuvres aux côtés d'autres internautes !</h2>

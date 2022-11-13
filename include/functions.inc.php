@@ -24,7 +24,7 @@ function active_page(string $page) : string{
 }
 
 
-function send_signup_mail(string $user_email, string $username) : string {
+function send_signup_mail(string $user_email, string $username, string $verifKey) : string {
     require_once "config-mail.inc.php";
     try {
         // SMTP configuration
@@ -105,7 +105,7 @@ function check_signup() : string {
         if ($user->check_username() && $user->check_mail() && $user->check_num() && $user->check_naissance() && $user->check_mdp()) {
             $user->addToDatabase();
             $verifKey = $user->__getCleVerification();
-            send_signup_mail($user_email, $username);
+            send_signup_mail($user_email, $username, $verifKey);
             return "Votre compte a bien été créé. Un mail de confirmation vous a été envoyé.";
         }
     }

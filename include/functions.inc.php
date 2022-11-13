@@ -67,6 +67,7 @@ function send_signup_mail(string $user_email, string $username, string $verifKey
         // $mail->msgHTML(file_get_contents('contents.html'), __DIR__);
         // $mail->addAttachment('path/to/file.pdf', 'file.pdf');
         $mailer->send();
+        return "";
     } catch (Exception $e) {
         return 'Message could not be sent. Mailer Error: '. $mailer->ErrorInfo;
     }

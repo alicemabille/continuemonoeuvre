@@ -8,7 +8,7 @@
 			<?php 
 				if($isset_txt){
 					$txt_id = $_GET["txt_id"];
-					echo txt_full($txt_id,"poem");
+					include "include/text-editor.inc.php";
 				}
 				else{
 					echo "<p class='alert alert-warning'>Pas de texte à afficher.</p>";

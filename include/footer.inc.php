@@ -31,8 +31,8 @@
 			<div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
 			<!-- Links -->
 			<h6 class="text-uppercase fw-bold mb-4">Liens utiles</h6>
-			<p><a href="https://github.com/alicemabille/continuemonoeuvre" class="text-reset">GitHub</a></p>
-			<p><a href="https://www.cyu.fr/licence-informatique-1" class="text-reset">Licence informatique à CYU</a></p>
+			<p><a href="https://github.com/alicemabille/continuemonoeuvre" class="text-reset" target="_blank">GitHub</a></p>
+			<p><a href="https://www.cyu.fr/licence-informatique-1" class="text-reset" target="_blank">Licence informatique à CYU</a></p>
 			</div>
 
 

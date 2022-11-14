@@ -82,7 +82,18 @@
             $res = false;
             $err = "";
             if (filter_var($this->mailUtilisateur, FILTER_VALIDATE_EMAIL)) {
-                $res = true;
+                $mysqli = $this->connectionToDatabase();
+                $query = "
+                    SELECT COUNT(*) FROM utilisateur WHERE mail_utilisateur='". $this->mailUtilisateur ."';
+                ";
+                $result = $mysqli->query($query);
+                $fetch = $result->fetch_row();
+                $mysqli->close();
+                if ($fetch[0] == 0) {
+                    $res = true;
+                } else {
+                    $err = "<b>Cette adresse mail a déjà été utilisé pour un autre compte.</b>";
+                }
             } else {
                 $err = "<b>Votre adresse mail est invalide.</b>";
             }
@@ -138,7 +149,7 @@
         public function check_mdp():bool {
             $res = false;
             $err = "";
-            if (strlen($this->mdpUtilisateur) >= 8) { // minimum 8 caractères
+            if ((strlen($this->mdpUtilisateur) >= 8) && (strlen($this->mdpUtilisateur) <= 20)) { // minimum 8 caractères et maximum 20 caractères
                 if (preg_match('/[a-z]/', $this->mdpUtilisateur)) { // au moins 1 min
                     if (preg_match('/[A-Z]/', $this->mdpUtilisateur)) { // au moins 1 MAJ
                         if (preg_match('/[0-9]/', $this->mdpUtilisateur)) { // au moins 1 chiffre 

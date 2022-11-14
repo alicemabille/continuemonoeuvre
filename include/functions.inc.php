@@ -107,7 +107,7 @@ function check_signup() : string {
             $user->addToDatabase();
             $verifKey = $user->__getCleVerification();
             send_signup_mail($user_email, $username, $verifKey);
-            return "Votre compte a bien été créé. Un mail de confirmation vous a été envoyé.";
+            return "<p class='alert alert-primary mt-2'>Votre compte a bien été créé. Un mail de confirmation vous a été envoyé.</p>";
         }
     }
     return "";
@@ -145,10 +145,10 @@ function check_signin() : string {
                     header("Location: index.php");
                 }
             } else {
-                $err = "Veuillez confirmer votre inscription dans le mail que nous vous avons envoyé avant de vous connecter";
+                $err = "<p class='alert alert-danger mt-2'>Veuillez confirmer votre inscription dans le mail que nous vous avons envoyé avant de vous connecter</p>";
             }
         } else {
-            $err = "Nom d'utilisateur ou mot de passe incorrect";
+            $err = "<p class='alert alert-danger mt-2'>Nom d'utilisateur ou mot de passe incorrect</p>";
         }
     }
     return $err;

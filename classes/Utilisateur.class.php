@@ -66,13 +66,13 @@
                     if ($fetch[0] == 0) {
                         $res = true;
                     } else {
-                        $err = "<b>Ce nom est déjà pris par un autre utilisateur.</b>";
+                        $err = "<p class='alert alert-danger mt-2'>Ce nom est déjà pris par un autre utilisateur.</p>";
                     }
                 } else {
-                    $err = "<b>Votre nom d'utilisateur ne peut contenir que des caractères alphanumériques.</b>";
+                    $err = "<p class='alert alert-danger mt-2'>Votre nom d'utilisateur ne peut contenir que des caractères alphanumériques.</p>";
                 }
             } else {
-                $err = "<b>Votre nom d'utilisateur doit contenir entre 5 et 20 caractères.</b>";
+                $err = "<p class='alert alert-danger mt-2'>Votre nom d'utilisateur doit contenir entre 5 et 20 caractères.</p>";
             }
             echo $err;
             return $res;
@@ -92,10 +92,10 @@
                 if ($fetch[0] == 0) {
                     $res = true;
                 } else {
-                    $err = "<b>Cette adresse mail a déjà été utilisé pour un autre compte.</b>";
+                    $err = "<p class='alert alert-danger mt-2'>Cette adresse mail a déjà été utilisé pour un autre compte.</p>";
                 }
             } else {
-                $err = "<b>Votre adresse mail est invalide.</b>";
+                $err = "<p class='alert alert-danger mt-2'>Votre adresse mail est invalide.</p>";
             }
             echo $err;
             return $res;
@@ -109,13 +109,13 @@
                     if (substr($this->numTelUtilisateur, 0, 2) == "06" || substr($this->numTelUtilisateur, 0, 2) == "07") {
                         $res = true;
                     } else {
-                        $err = "<b>Votre numéro de téléphone est invalide</b>";
+                        $err = "<p class='alert alert-danger mt-2'>Votre numéro de téléphone est invalide</p>";
                     }
                 } else {
-                    $err = "<b>Votre numéro de téléphone ne peut contenir que des chiffres.</b>";
+                    $err = "<p class='alert alert-danger mt-2'>Votre numéro de téléphone ne peut contenir que des chiffres.</p>";
                 }
             } else {
-                $err = "<b>Votre numéro de téléphone doit être composé de 10 chiffres.</b>";
+                $err = "<p class='alert alert-danger mt-2'>Votre numéro de téléphone doit être composé de 10 chiffres.</p>";
             }
             echo $err;
             return $res;
@@ -134,13 +134,13 @@
                     if ($this->naissanceUtilisateur > $date100) { // naissance > 100 ans avant
                         $res = true;
                     } else {
-                        $err = "<b>Votre date de naissance est invalide.</b>";
+                        $err = "<p class='alert alert-danger mt-2'>Votre date de naissance est invalide.</p>";
                     }
                 } else {
-                    $err = "<b>Votre date de naissance est invalide.</b>";
+                    $err = "<p class='alert alert-danger mt-2'>Votre date de naissance est invalide.</p>";
                 }
             } else {
-                $err = "<b>Format de date invalide.</b>";
+                $err = "<p class='alert alert-danger mt-2'>Format de date invalide.</p>";
             }
             echo $err;
             return $res;
@@ -155,16 +155,16 @@
                         if (preg_match('/[0-9]/', $this->mdpUtilisateur)) { // au moins 1 chiffre 
                             $res = true;
                         } else {
-                            $err = "<b>Votre mot de passe doit contenir au moins 1 chiffre.</b>";
+                            $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 chiffre.</p>";
                         }
                     } else {
-                        $err = "<b>Votre mot de passe doit contenir au moins 1 majuscule.</b>";
+                        $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 majuscule.</p>";
                     }
                 } else {
-                    $err = "<b>Votre mot de passe doit contenir au moins 1 minuscule.</b>";
+                    $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 minuscule.</p>";
                 }
             } else {
-                $err = "<b>Votre mot de passe doit contenir au moins 8 caractères.</b>";
+                $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 8 caractères.</p>";
             }
             echo $err;
             return $res;

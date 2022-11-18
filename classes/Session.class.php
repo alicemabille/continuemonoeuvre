@@ -16,11 +16,17 @@
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "
-                SELECT mdp_chiff_utilisateur FROM utilisateur WHERE nom_utilisateur='". $this->nomUtilisateur ."';
+                SELECT mdp_chiff_utilisateur FROM utilisateur WHERE nom_utilisateur=?;
             ";
-            $result = $mysqli->query($query);
-            $fetch = $result->fetch_row();
-            $mdp = $fetch[0];
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("s", $this->nomUtilisateur);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $fetch = $result->fetch_assoc();
+                $mdp = $fetch['mdp_chiff_utilisateur'];
+                $stmt->close();
+            }
                         
             $mysqli->close();
             return password_verify($this->mdpUtilisateur, $mdp);
@@ -30,11 +36,17 @@
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "
-                SELECT compte_actif_utilisateur FROM utilisateur WHERE nom_utilisateur='". $this->nomUtilisateur ."';
+                SELECT compte_actif_utilisateur FROM utilisateur WHERE nom_utilisateur=?;
             ";
-            $result = $mysqli->query($query);
-            $fetch = $result->fetch_row();
-            $active = $fetch[0];
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("s", $this->nomUtilisateur);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $fetch = $result->fetch_assoc();
+                $active = $fetch['compte_actif_utilisateur'];
+                $stmt->close();
+            }
             $mysqli->close();
             return $active;
         }

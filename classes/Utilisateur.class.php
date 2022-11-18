@@ -8,7 +8,7 @@
         private string $cleVerificationUtilisateur;
         private bool $compteActifUtilisateur;
 
-        public function __construct(string $nomUtilisateur, string $mailUtilisateur, string $numTelUtilisateur, string $naissanceUtilisateur, string $mdpUtilisateur, bool $compteActifUtilisateur = false) {
+        public function __construct(string $nomUtilisateur, string $mailUtilisateur, string $naissanceUtilisateur, string $mdpUtilisateur, string $numTelUtilisateur = '', bool $compteActifUtilisateur = false) {
             // Vérification au préalable de la validité des informations (nombre de caractères, adresse valide, htmlspecialchars() etc..)
             $this->nomUtilisateur = $nomUtilisateur;
             $this->mailUtilisateur = $mailUtilisateur;
@@ -39,13 +39,14 @@
                 INSERT INTO utilisateur(nom_utilisateur, mail_utilisateur, num_tel_utilisateur, naissance_utilisateur, mdp_chiff_utilisateur, cle_verification_utilisateur, compte_actif_utilisateur)
                     VALUES ('". $this->nomUtilisateur ."', '". $this->mailUtilisateur ."', '". $this->numTelUtilisateur ."', '". $this->naissanceUtilisateur ."', '". $mdpChiffUtilisateur ."', '". $this->cleVerificationUtilisateur ."', '". $this->compteActifUtilisateur ."');
             ";
-            $result = $mysqli->query($query);
-            if ($result) {
-                $res = true;
-            } else {
-                // DEBUG
-                // print_r($mysqli->error_list); // tableau
-                // echo $mysqli->errno ." : ". $mysqli->error;
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->execute();
+                $code = $stmt->errno;
+                if (!$code) {
+                    $res = true;
+                }
+                $stmt->close();
             }
             $mysqli->close();
             return $res;
@@ -58,16 +59,24 @@
                 if (ctype_alnum($this->nomUtilisateur)) {
                     $mysqli = $this->connectionToDatabase();
                     $query = "
-                        SELECT COUNT(*) FROM utilisateur WHERE nom_utilisateur='". $this->nomUtilisateur ."';
+                        SELECT COUNT(*) FROM utilisateur WHERE nom_utilisateur=?;
                     ";
-                    $result = $mysqli->query($query);
-                    $fetch = $result->fetch_row();
-                    $mysqli->close();
-                    if ($fetch[0] == 0) {
-                        $res = true;
+                    $stmt = $mysqli->prepare($query);
+                    if ($stmt) {
+                        $stmt->bind_param("s", $this->nomUtilisateur);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $fetch = $result->fetch_assoc();
+                        $stmt->close();
+                        if ($fetch['COUNT(*)'] == 0) {
+                            $res = true;
+                        } else {
+                            $err = "<p class='alert alert-danger mt-2'>Ce nom est déjà pris par un autre utilisateur.</p>";
+                        }
                     } else {
-                        $err = "<p class='alert alert-danger mt-2'>Ce nom est déjà pris par un autre utilisateur.</p>";
+                        $err = "<p class='alert alert-danger mt-2'>Un problème est survenu lors de la création du compte.</p>";
                     }
+                    $mysqli->close();
                 } else {
                     $err = "<p class='alert alert-danger mt-2'>Votre nom d'utilisateur ne peut contenir que des caractères alphanumériques.</p>";
                 }
@@ -84,16 +93,24 @@
             if (filter_var($this->mailUtilisateur, FILTER_VALIDATE_EMAIL)) {
                 $mysqli = $this->connectionToDatabase();
                 $query = "
-                    SELECT COUNT(*) FROM utilisateur WHERE mail_utilisateur='". $this->mailUtilisateur ."';
+                    SELECT COUNT(*) FROM utilisateur WHERE mail_utilisateur=?;
                 ";
-                $result = $mysqli->query($query);
-                $fetch = $result->fetch_row();
-                $mysqli->close();
-                if ($fetch[0] == 0) {
-                    $res = true;
+                $stmt = $mysqli->prepare($query);
+                if ($stmt) {
+                    $stmt->bind_param("s", $this->mailUtilisateur);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $fetch = $result->fetch_assoc();
+                    $stmt->close();
+                    if ($fetch['COUNT(*)'] == 0) {
+                        $res = true;
+                    } else {
+                        $err = "<p class='alert alert-danger mt-2'>Cette adresse mail a déjà été utilisé pour un autre compte.</p>";
+                    }
                 } else {
-                    $err = "<p class='alert alert-danger mt-2'>Cette adresse mail a déjà été utilisé pour un autre compte.</p>";
+                    $err = "<p class='alert alert-danger mt-2'>Un problème est survenu lors de la création du compte.</p>";
                 }
+                $mysqli->close();
             } else {
                 $err = "<p class='alert alert-danger mt-2'>Votre adresse mail est invalide.</p>";
             }
@@ -104,6 +121,7 @@
         public function check_num():bool {
             $res = false;
             $err = "";
+            echo "DEBUG : taille du numéro de téléphone : ". strlen($this->numTelUtilisateur);
             if (strlen($this->numTelUtilisateur) == 10) {
                 if (ctype_digit($this->numTelUtilisateur)) {
                     if (substr($this->numTelUtilisateur, 0, 2) == "06" || substr($this->numTelUtilisateur, 0, 2) == "07") {
@@ -114,6 +132,8 @@
                 } else {
                     $err = "<p class='alert alert-danger mt-2'>Votre numéro de téléphone ne peut contenir que des chiffres.</p>";
                 }
+            } else if (strlen($this->numTelUtilisateur) == 0) {
+                $res = true; // numéro de téléphone pas obligatoire
             } else {
                 $err = "<p class='alert alert-danger mt-2'>Votre numéro de téléphone doit être composé de 10 chiffres.</p>";
             }

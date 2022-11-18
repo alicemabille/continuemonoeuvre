@@ -79,7 +79,6 @@ function send_signup_mail(string $user_email, string $username, string $verifKey
 function check_signup() : string {
     if(isset($_POST["username"])&&(!empty($_POST["username"]))
     &&isset($_POST["email"])&&(!empty($_POST["email"]))
-    &&isset($_POST["tel"])&&(!empty($_POST["tel"]))
     &&isset($_POST["birthdate"])&&(!empty($_POST["birthdate"]))
     &&isset($_POST["password"])&&(!empty($_POST["password"]))
     &&isset($_POST["password-confirm"])&&(!empty($_POST["password-confirm"])))
@@ -93,15 +92,20 @@ function check_signup() : string {
         }
         
         $username = $_POST["username"];
-        $user_tel = $_POST["tel"];
         $birthdate = $_POST["birthdate"];
         $password = $_POST["password"];
+
+        //phone number is optional
+        $user_tel = "";
+        if(isset($_POST["tel"])&&(!empty($_POST["tel"]))){
+            $user_tel = $_POST["tel"];
+        }
 
         spl_autoload_register(function ($classe) {
             include('classes/'. $classe .'.class.php');
         });
 
-        $user = new Utilisateur($username, $user_email, $user_tel, $birthdate, $password);
+        $user = new Utilisateur($username, $user_email, $birthdate, $password, $user_tel);
         
         if ($user->check_username() && $user->check_mail() && $user->check_num() && $user->check_naissance() && $user->check_mdp()) {
             $user->addToDatabase();
@@ -229,10 +233,103 @@ function txt_full(string $filename, ?string $category="novel") : string {
         }
         $txt = "<article class=\" text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
             ucfirst($filename)."</h3>\n\t\t\t\t"
-            .$txt."...</p> \n\t\t\t </article> \n";
+            .$txt."</p> \n\t\t\t </article> \n";
         return $txt;
     }
     return "Ce texte n'existe pas.";
+}
+
+/**
+ * Preview of the end given file (used on the edit page).
+ * @param filename : name of the file containing the text to display, without ".html".
+ * @param category : novel or poem. Will change the way paragraphs are defined.
+ * @return string html containing cropped story
+ */
+function txt_end(string $filename, ?string $category="novel") : string {
+    $filepath = "text-examples/".$filename.".txt";
+    if(file_exists($filepath)){
+        $txt = file_get_contents($filepath);
+
+        //crop the text and style accordingly to category
+        if(strlen($txt) >  MAX_TXT_PREVIEW_LENGTH) {
+            $txt = substr($txt, -MAX_TXT_PREVIEW_LENGTH);
+            $alignment = "left";
+        }
+        if($category=="novel"){
+            $txt = str_replace("\n\n","</p><p>",$txt);
+        }
+        else if($category=="poem"){
+            $nbbr = substr_count($txt,"\n");
+            if($nbbr >  MAX_POEM_LENGTH) {
+                $txt = substr($txt, -MAX_POEM_LENGTH*11);
+            }
+            $txt = str_replace("\n\n","</p><p>",$txt);
+            $txt = str_replace("\n","</br>",$txt);
+            $alignment = "center";
+        }
+        else{
+            return "Catégorie de texte inconnue.";
+        }
+
+        //styling the cropped result
+        if($_SESSION['session']==true){
+            $txt = "<p>...".$txt;
+            $txt = "<article class=\" text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
+            ucfirst($filename)."</h3>\n\t\t\t\t"
+            .$txt."</p> \n\t\t\t </article> \n";
+            return $txt;
+        }
+        $txt = "<article class=\" text-".$alignment." text-preview col-12 col-md-5 bg-secondary text-white p-4 m-4 rounded shadow\"> \n\t\t\t\t<h3>".
+        ucfirst($filename)."</h3>\n\t\t\t\t"
+        .$txt."</p><a href=\"connexion.php?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Contribuer à ce texte</a> \n\t\t\t </article> \n";
+        return $txt;
+        
+    }
+
+    //text or category not found
+    return "Ce texte n'existe pas.";
+}
+
+function check_text_edit() : void {
+    if(isset($_GET["txt_id"])&&(!empty($_GET["txt_id"])))
+    {
+        if(isset($_POST["editor-textArea"])&&(!empty($_POST["editor-textArea"]))){
+            edit_text($_GET["txt_id"], $_POST["editor-textArea"]);
+        }
+        else echo "<p class='alert alert-primary mt-2'>Could not get text area content.</p>";
+    }
+    else echo "<p class='alert alert-primary mt-2'>L'id du texte à modifier n'a pas pu être récupéré.</p>";
+}
+
+function edit_text(string $text_id, string $text_to_add) : void {
+    $filename = "text-examples/".$text_id.".txt";
+    if (is_writable($filename)) {
+        // The file pointer is at the bottom of the file hence
+        // that's where $somecontent will go when we fwrite() it.
+        if (!$fp = fopen($filename, 'a')) {
+            echo "<p class='alert alert-primary mt-2'>Cannot open file ($filename)</p>";
+            exit;
+        }
+
+        // Write $somecontent to our opened file.
+        if (fwrite($fp, $text_to_add) === FALSE) {
+            echo "<p class='alert alert-primary mt-2'>Cannot write to file ($filename)</p>";
+            exit;
+        }
+
+        echo "<p class='alert alert-primary mt-2'>Votre contribution a bien été prise en compte !.</p>";
+
+        fclose($fp);
+
+    } else {
+        echo "The file $filename is not writable";
+    }
+    //$file = fopen("text-examples/".$text_id.".txt",'r');
+    //$temp_file = fopen("text-examples/".$text_id."_temp.txt",'w');
+
+    //fclose($file);
+    //fclose($temp_file);
+    //rename("text-examples/".$text_id."_temp.txt", "text-examples/".$text_id.".txt");
 }
 
 function modif_db_ddl(string $requests) {

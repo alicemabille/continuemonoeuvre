@@ -15,7 +15,7 @@
 						echo txt_full($txt_id,$txt_category);
 						echo '<div class="row">';
 						include "include/gif-board.inc.php";
-						echo '<form class="col-md-4 col-sm-6 m-1" action="ecriture.php?txt_id='.$txt_id.'" method="post">
+						echo '<form class="col-md-4 col-sm-6 m-1" action="ecriture.php?txt_id='.$txt_id.'&txt_category='.$txt_category.'" method="post">
 							<button class="btn btn-primary">Contribuer à ce texte</button>
 							</form>
 							</div>';

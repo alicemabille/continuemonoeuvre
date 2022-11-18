@@ -49,7 +49,7 @@ $("#search_gif_button").click(function() {
 
 //    ecriture.php
 
-(function() {
+/*(function() {
   let display;
   let edit;
 
@@ -63,14 +63,14 @@ $("#search_gif_button").click(function() {
   display.innerHTML = editContainer;
   edit.innerText = editContainer;
   } else {
-    let initialContents = "<style> \n.intro { \ncolor: yellow; \ntext-decoration: underline; \ntext-align: center;\n} \n</style>\n\n<h3 class='intro'>Designed by Dillion Megida</h3>";
+    //let initialContents = "<style> \n.intro { \ncolor: yellow; \ntext-decoration: underline; \ntext-align: center;\n} \n</style>\n\n<h3 class='intro'>Designed by Dillion Megida</h3>";
 
     localStorage.setItem('edit-container', initialContents);
 
     display = document.getElementById('display');
     edit = document.getElementById('edit');
-    edit.innerText = initialContents;
-    display.innerHTML = initialContents;
+    //edit.innerText = initialContents;
+    //display.innerHTML = initialContents;
   }
 
   // When a new data is typed in the edit field, add to storage and update the display panel    
@@ -84,4 +84,4 @@ $("#search_gif_button").click(function() {
     // Update storage
     localStorage.setItem('edit-container', editContainer);
   });
-})();
+})();*/

@@ -1,4 +1,4 @@
-<footer class="bg-dark text-center text-white mt-2">
+<footer class="bg-dark text-center text-white pt-2">
 
 	<!-- Section: Links  -->
 	<section class="">
@@ -50,3 +50,4 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script src="scripts/script.js"></script>
+<script src="https://unpkg.com/bootstrap-show-password@1.2.1/dist/bootstrap-show-password.min.js"></script>

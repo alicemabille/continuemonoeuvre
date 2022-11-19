@@ -177,31 +177,32 @@ function txt_preview(string $filename, ?string $category="novel") : string {
             $txt = substr($txt, 0, MAX_TXT_PREVIEW_LENGTH);
             $alignment = "left";
         }
-        $txt = "<p>".$txt;
-        if($category=="novel"){
-            $txt = str_replace("\n\n","</p><p>",$txt);
-        }
-        else if($category=="poem"){
+        if($category=="poem"){
+            $txt = "<pre>".$txt;
             $nbbr = substr_count($txt,"\n");
             if($nbbr >  MAX_POEM_LENGTH) {
                 $txt = substr($txt, 0, MAX_POEM_LENGTH*11);
             }
-            $txt = str_replace("\n\n","</p><p>",$txt);
-            $txt = str_replace("\n","</br>",$txt);
+            /*$txt = str_replace("\n\n","</p><p>",$txt);
+            $txt = str_replace("\n","</br>",$txt);*/
             $alignment = "center";
+            $end_tag = "</pre>";
+        }
+        else if($category=="novel"){
+            $txt = "<p>".$txt;
+            $txt = str_replace("\n\n","</p><p>",$txt);
+            $end_tag = "</p>";
+            //$alignment = "left";
         }
         else{
             return "Catégorie de texte inconnue.";
         }
         if($_SESSION['session']==true){
-            $txt = "<article class=\" text-".$alignment." text-preview col-12 col-md-5 bg-secondary text-white p-4 m-4 rounded shadow\"> \n\t\t\t\t<h3>".
-            ucfirst($filename)."</h3>\n\t\t\t\t"
-            .$txt."...</p><a href=\"lecture.php?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Lire la suite</a> \n\t\t\t </article> \n";
-            return $txt;
+            $href = "lecture.php";
         }
         $txt = "<article class=\" text-".$alignment." text-preview col-12 col-md-5 bg-secondary text-white p-4 m-4 rounded shadow\"> \n\t\t\t\t<h3>".
         ucfirst($filename)."</h3>\n\t\t\t\t"
-        .$txt."...</p><a href=\"connexion.php?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Lire la suite</a> \n\t\t\t </article> \n";
+        .$txt."...".$end_tag."<a href=\"".$href."?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Lire la suite</a> \n\t\t\t </article> \n";
         return $txt;
         
     }
@@ -341,6 +342,101 @@ function modif_db_ddl(string $requests) {
         echo $mysqli->error;
     }
     $mysqli->close();
+}
+
+include "api-keys.inc.php";
+define("RESULTS_MAX",20);
+
+/**
+ * Décoder JSON vidéos pour API pixabay
+ */
+function decode_json_videos(string $d) : object{
+    $url='https://pixabay.com/api/videos/?key='.PIXABAY_API_KEY.'&q='.$d;
+    $json=file_get_contents($url);
+    $data = json_decode($json);
+    return $data;
+}
+
+/**
+ * Décoder JSON photos pour API pixabay
+ */
+function decode_json_photos(string $d) : object{
+    $url='https://pixabay.com/api/?key='.PIXABAY_API_KEY.'&q='.$d.'&image_type=photo';
+    $json=file_get_contents($url);
+    $data = json_decode($json);
+    return $data;
+}
+
+/**
+ * Préparer le string pour l'url
+ */
+function explorer(string $requete) : string{
+    $exp = explode(" ", $requete);
+    $def_req="";
+    for ($n=0;$n<sizeof($exp);$n++){
+        if ($n == count($exp)-1){
+        $def_req .=$exp[$n];
+        } else {
+        $def_req .=$exp[$n]."+"; 
+        }
+    }
+    return $def_req;
+}
+
+/**
+ * Avoir les vidéos demandées par l'user
+ */
+function get_videos(string $q) : string{
+    $str="";
+    $def_q = explorer($q);
+    $datas = decode_json_videos($def_q);
+    $nbr = $datas->totalHits;
+    if ($nbr == 0){
+        $str="AUCUNE VIDÉOS NE CORRESPOND À VOTRE RECHERCHE";
+        return $str;
+    } else {
+        $videos = $datas->hits;
+        for ($i=0;$i<RESULTS_MAX;$i++){
+        $video_page = $videos[$i]->pageURL;
+        $video_small = $videos[$i]->videos->small->url;
+        $str .='<li>
+                    <figure>
+                    <video width="220" height="140" controls>
+                        <source src='.$video_small.' type=video/mp4>
+                    </video>
+                    <figcaption><a href='.$video_page.' target="_blank">Vidéo '.$i.'</a></figcaption>
+                    </figure>
+                </li>';
+        }
+    }
+    return $str;
+}
+
+/**
+ * Avoir les photos demandées par l'user
+ */
+function get_images(string $q) : string{
+    $str="";
+    $def_q = explorer($q);
+    $datas = decode_json_photos($def_q);
+    $nbr = $datas->totalHits;
+    if ($nbr == 0){
+        $str="AUCUNE PHOTOS NE CORRESPOND À VOTRE RECHERCHE";
+        return $str;
+    } else {
+        $photos = $datas->hits;
+        for ($i=0;$i<RESULTS_MAX;$i++){
+        $photo_page = $photos[$i]->pageURL;
+        $photo_small = $photos[$i]->webformatURL;
+        $str .='<li>
+                    <figure>
+                    <img width="220" height="140" src="'.$photo_small.'" alt="Résultat '.$i.'">
+                    <figcaption><a href='.$photo_page.' target="_blank">Photos '.$i.'</a></figcaption>
+                    </figure>
+                </li>';
+        }
+    }
+    return $str;
 }
 
 ?>

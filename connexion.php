@@ -11,8 +11,15 @@
                     <p class="invalid-feedback">Veuillez compléter ce champ.</p>
                 </fieldset>
                 <fieldset class="form-group">
-                    <label for="password_input">Mot de passe</label>
-                    <input name="password" type="password" id="password_input" class="signup_form form-control" maxlength="30" required/>
+                    <div class="input-group">
+                        <label for="password_input">Mot de passe</label>
+                        <input name="password" type="password" id="password_input" class="signup_form form-control" data-toggle="password" maxlength="30" required/>
+                        <!-- <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fa fa-eye"></i>
+                            </span>
+                        </div> -->
+                    </div>
                     <p class="invalid-feedback">Veuillez compléter ce champ.</p>
                 </fieldset>
         <?php $return = check_signin(); ?>

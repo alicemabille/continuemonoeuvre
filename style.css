@@ -1,19 +1,17 @@
+body{
+    min-height: 100vh;
+}
+
 main {
     min-height: 80vh;
     height: auto !important;
-    height: 100%;
-    margin: 0 auto -60px;
+    /* height: 100%; */
+    margin: 0 auto -60px; /*necessary for small devices !*/
     margin-bottom: 5vh;
 }
 
-body{
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
 footer{
-    margin-top: auto;
+    /* margin-top: auto; */
     margin-bottom:0;
 }
 

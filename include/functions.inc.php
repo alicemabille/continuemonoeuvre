@@ -9,6 +9,20 @@ require_once 'phpmailer/PHPMailer.php';
 require_once 'phpmailer/SMTP.php';
 
 /**
+ * Finds nth occurrence of a string in a string.
+ * @param string $haystack the string to searh in
+ * @param string $needle the string to search for
+ * @param int $n
+ * @return int the position of the nth occurence of $needle in $haystack
+ */
+function strnpos(string $haystack, string $needle, int $n = 0) : int {
+    return strpos($haystack, $needle, 
+        $n > 1 ?
+        strnpos($haystack, $needle, $n - 1) + strlen($needle) : 0
+    );
+}
+
+/**
  * Echos "active" if the page passed as a parameter is the current page. Useful with bootstrap for a cool nav menu.
  * @param page : the page you want to know is active or not.
  */
@@ -169,30 +183,30 @@ const MAX_POEM_LENGTH = 20;
  * @param category : novel or poem. Will change the way paragraphs are defined.
  * @return string html containing cropped story
  */
-function txt_preview(string $filename, ?string $category="novel") : string {
+function txt_preview(string $filename, ?string $title="", ?string $category="novel") : string {
+    if(empty($title)){
+        $title = ucfirst($filename);
+    }
     $filepath = "text-examples/".$filename.".txt";
     if(file_exists($filepath)){
         $txt = file_get_contents($filepath);
-        if(strlen($txt) >  MAX_TXT_PREVIEW_LENGTH) {
-            $txt = substr($txt, 0, MAX_TXT_PREVIEW_LENGTH);
-            $alignment = "left";
-        }
         if($category=="poem"){
-            $txt = "<pre>".$txt;
-            $nbbr = substr_count($txt,"\n");
+            $txt = "<pre class='p-4 text-left'>".$txt;
+            /*$nbbr = substr_count($txt,"\n");
             if($nbbr >  MAX_POEM_LENGTH) {
                 $txt = substr($txt, 0, MAX_POEM_LENGTH*11);
-            }
-            /*$txt = str_replace("\n\n","</p><p>",$txt);
-            $txt = str_replace("\n","</br>",$txt);*/
-            $alignment = "center";
-            $end_tag = "</pre>";
+            }*/
+            $txt = substr($txt, 0, strnpos($txt, "\n\n", 2));
+            $txt .= "</pre>";
+        }
+        else if($category=="haiku"){
+            $txt = "<pre class='p-4 text-center'>".$txt;
+            $txt = substr($txt, 0, strnpos($txt, "\n\n", 4));
+            $txt .= "</pre>";
         }
         else if($category=="novel"){
-            $txt = "<p>".$txt;
-            $txt = str_replace("\n\n","</p><p>",$txt);
-            $end_tag = "</p>";
-            //$alignment = "left";
+            $txt = substr($txt, 0, strpos($txt, "\n\n"));
+            $txt = "<p class='p-4 text-left'>".str_replace("\n\n","</p><p>",$txt)."</p>";
         }
         else{
             return "Catégorie de texte inconnue.";
@@ -200,9 +214,11 @@ function txt_preview(string $filename, ?string $category="novel") : string {
         if($_SESSION['session']==true){
             $href = "lecture.php";
         }
-        $txt = "<article class=\" text-".$alignment." text-preview col-12 col-md-5 bg-secondary text-white p-4 m-4 rounded shadow\"> \n\t\t\t\t<h3>".
-        ucfirst($filename)."</h3>\n\t\t\t\t"
-        .$txt."...".$end_tag."<a href=\"".$href."?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Lire la suite</a> \n\t\t\t </article> \n";
+        $txt = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
+                "<h3 class='p-2'>".$title."</h3>\n\t\t\t\t"
+                .$txt."<div class='preview-text-image container-fluid p-5 mb-0 bg-image' style=\"background-image: url(".first_pixabay($title).");\">
+                <a href=\"".$href."?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Lire la suite</a></div> \n\t\t\t
+                </article> \n";
         return $txt;
         
     }
@@ -215,27 +231,14 @@ function txt_preview(string $filename, ?string $category="novel") : string {
  * @param category : novel or poem. Will change the way paragraphs are defined.
  * @return string html containing full story
  */
-function txt_full(string $filename, ?string $category="novel") : string {
+function txt_full(string $filename, ?string $category="novel", ?string $title="") : string {
+    if(empty($title)){
+        $title = ucfirst($filename);
+    }
     $filepath = "text-examples/".$filename.".txt";
     if(file_exists($filepath)){
         $txt = file_get_contents($filepath);
-        $txt = "<p>".$txt;
-        if($category=="novel"){
-            $txt = str_replace("\n\n","</p><p>",$txt);
-            $alignment = "left";
-        }
-        else if($category=="poem"){
-            $txt = str_replace("\n\n","</p><p>",$txt);
-            $txt = str_replace("\n","</br>",$txt);
-            $alignment = "center";
-        }
-        else{
-            return "Unknown text category.";
-        }
-        $txt = "<article class=\" text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
-            ucfirst($filename)."</h3>\n\t\t\t\t"
-            .$txt."</p> \n\t\t\t </article> \n";
-        return $txt;
+        return txt_display($txt, $title, $category);
     }
     return "Ce texte n'existe pas.";
 }
@@ -246,7 +249,10 @@ function txt_full(string $filename, ?string $category="novel") : string {
  * @param category : novel or poem. Will change the way paragraphs are defined.
  * @return string html containing cropped story
  */
-function txt_end(string $filename, ?string $category="novel") : string {
+function txt_end(string $filename, ?string $category="novel", ?string $title="") : string {
+    if(empty($title)){
+        $title = ucfirst($filename);
+    }
     $filepath = "text-examples/".$filename.".txt";
     if(file_exists($filepath)){
         $txt = file_get_contents($filepath);
@@ -254,19 +260,27 @@ function txt_end(string $filename, ?string $category="novel") : string {
         //crop the text and style accordingly to category
         if(strlen($txt) >  MAX_TXT_PREVIEW_LENGTH) {
             $txt = substr($txt, -MAX_TXT_PREVIEW_LENGTH);
-            $alignment = "left";
         }
         if($category=="novel"){
             $txt = str_replace("\n\n","</p><p>",$txt);
+            $txt = "<p>...".$txt."</p>";
+            $alignment = "left";
         }
-        else if($category=="poem"){
+        else if($category=="haikus"){
             $nbbr = substr_count($txt,"\n");
             if($nbbr >  MAX_POEM_LENGTH) {
                 $txt = substr($txt, -MAX_POEM_LENGTH*11);
             }
-            $txt = str_replace("\n\n","</p><p>",$txt);
-            $txt = str_replace("\n","</br>",$txt);
+            $txt = "<pre>...".$txt."</pre>";
             $alignment = "center";
+        }
+        else if($category=="poem") {
+            $nbbr = substr_count($txt,"\n");
+            if($nbbr >  MAX_POEM_LENGTH) {
+                $txt = substr($txt, -MAX_POEM_LENGTH*11);
+            }
+            $txt = "<pre>...".$txt."</pre>";
+            $alignment = "left";
         }
         else{
             return "Catégorie de texte inconnue.";
@@ -274,21 +288,44 @@ function txt_end(string $filename, ?string $category="novel") : string {
 
         //styling the cropped result
         if($_SESSION['session']==true){
-            $txt = "<p>...".$txt;
             $txt = "<article class=\" text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
-            ucfirst($filename)."</h3>\n\t\t\t\t"
-            .$txt."</p> \n\t\t\t </article> \n";
+            $title."</h3>\n\t\t\t\t"
+            .$txt."\n\t\t\t </article> \n";
             return $txt;
         }
         $txt = "<article class=\" text-".$alignment." text-preview col-12 col-md-5 bg-secondary text-white p-4 m-4 rounded shadow\"> \n\t\t\t\t<h3>".
-        ucfirst($filename)."</h3>\n\t\t\t\t"
-        .$txt."</p><a href=\"connexion.php?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Contribuer à ce texte</a> \n\t\t\t </article> \n";
+        $title."</h3>\n\t\t\t\t"
+        .$txt."<a href=\"connexion.php?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Contribuer à ce texte</a> \n\t\t\t </article> \n";
         return $txt;
         
     }
 
     //text or category not found
     return "Ce texte n'existe pas.";
+}
+
+function txt_display(string $txt, string $title, ?string $category="novel") : string {
+    if($category=="novel"){
+        $txt = "<p>".$txt;
+        $txt = str_replace("\n\n","</p><p>",$txt);
+        $txt .= "</p>";
+        $alignment = "left";
+    }
+    else if($category=="haiku"){
+        $txt = "<pre>".$txt."</pre>";
+        $alignment = "center";
+    }
+    else if($category=="poem"){
+        $txt = "<pre>".$txt."</pre>";
+        $alignment = "left";
+    }
+    else{
+        return "Unknown text category.";
+    }
+    $txt = "<article class=\"text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
+        ucfirst($title)."</h3>\n\t\t\t\t"
+        .$txt."\n\t\t\t </article> \n";
+    return $txt;
 }
 
 function check_text_edit() : void {
@@ -384,6 +421,36 @@ function explorer(string $requete) : string{
 }
 
 /**
+ * Renvoie l'url de la première image résultante de la recherche pour $q
+ */
+function first_pixabay(string $q) : string {
+    $def_q = explorer($q);
+    $datas = decode_json_photos($def_q);
+    $nbr = $datas->totalHits;
+    if ($nbr == 0){
+        return "AUCUNE PHOTOS NE CORRESPOND À VOTRE RECHERCHE";
+    } else {
+        $photos = $datas->hits;
+        return $photos[0]->webformatURL;
+    }
+}
+
+/**
+ * Renvoie l'url de la première image en bonne qualité résultante de la recherche pour $q
+ */
+function first_pixabay_fullhd(string $q) : string {
+    $def_q = explorer($q);
+    $datas = decode_json_photos($def_q);
+    $nbr = $datas->totalHits;
+    if ($nbr == 0){
+        return "AUCUNE PHOTOS NE CORRESPOND À VOTRE RECHERCHE";
+    } else {
+        $photos = $datas->hits;
+        return $photos[0]->fullHDURL;
+    }
+}
+
+/**
  * Avoir les vidéos demandées par l'user
  */
 function get_videos(string $q) : string{
@@ -416,7 +483,7 @@ function get_videos(string $q) : string{
  * Avoir les photos demandées par l'user
  */
 function get_images(string $q) : string{
-    $str="";
+    $str='<div id="pixabay_img_list" class="row">';
     $def_q = explorer($q);
     $datas = decode_json_photos($def_q);
     $nbr = $datas->totalHits;
@@ -425,18 +492,15 @@ function get_images(string $q) : string{
         return $str;
     } else {
         $photos = $datas->hits;
-        for ($i=0;$i<RESULTS_MAX;$i++){
-        $photo_page = $photos[$i]->pageURL;
-        $photo_small = $photos[$i]->webformatURL;
-        $str .='<li>
-                    <figure>
-                    <img width="220" height="140" src="'.$photo_small.'" alt="Résultat '.$i.'">
-                    <figcaption><a href='.$photo_page.' target="_blank">Photos '.$i.'</a></figcaption>
-                    </figure>
-                </li>';
+        for ($i=0;$i<RESULTS_MAX;$i+=2){
+        //$photo_page = $photos[$i]->pageURL;
+        $str .='<div class="preview_gif col-5 m-1">
+                    <input type="image" class="rounded img-fluid" src="'.$photos[$i]->webformatURL.'" alt="'.$photos[$i]->pageURL.'">
+                    <input type="image" class="rounded img-fluid" src="'.$photos[$i+1]->webformatURL.'" alt="'.$photos[$i+1]->pageURL.'">
+                </div>';
         }
     }
-    return $str;
+    return $str.'</div>';
 }
 
 ?>

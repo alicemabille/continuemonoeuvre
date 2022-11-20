@@ -15,6 +15,10 @@ footer{
     margin-bottom:0;
 }
 
+pre {
+    font-family: 'Courier New', Courier, monospace;
+}
+
 #gif-board {
     max-height : 500px;
 }
@@ -24,12 +28,28 @@ footer{
     overflow-y : auto;
 }
 
+#pixabay_img_list {
+    max-height : 85vh;
+    overflow-y : auto;
+}
+
+.text-preview {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.bg-image {
+    height:18vh; background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
 .novel {
     height : 70vh;
     overflow-y : auto;
     padding : 16px;
     margin : 16px;
 }
+
 .logo-header {
     margin-right: 40px;
 }

@@ -24,6 +24,7 @@
 			<p><a href="connexion.php" class="text-reset">Connexion</a></p>
 			<p><a href="inscription.php" class="text-reset">Inscription</a></p>
 			<p><a href="profil.php" class="text-reset">Profil utilisateur</a></p>
+			<p><a href="nouveau-texte.php" class="text-reset">Nouveau texte</a></p>
 			</div>
 
 
@@ -33,6 +34,13 @@
 			<h6 class="text-uppercase fw-bold mb-4">Liens utiles</h6>
 			<p><a href="https://github.com/alicemabille/continuemonoeuvre" class="text-reset" target="_blank">GitHub</a></p>
 			<p><a href="https://www.cyu.fr/licence-informatique-1" class="text-reset" target="_blank">Licence informatique à CYU</a></p>
+			<p><figure id='pixabay_rights'>
+					<a href='https://pixabay.com/fr/' target='_blank'>
+						<img src='./images/droits_pixabay.png' alt='Images provided by Pixabay'/>
+					</a>
+					<figcaption>Images fournies par Pixabay_API</figcaption>
+				</figure>
+			</p>
 			</div>
 
 

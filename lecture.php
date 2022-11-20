@@ -4,9 +4,15 @@
 	include "include/header.inc.php";
 	$isset_txt = isset($_GET["txt_id"])&&!empty($_GET["txt_id"]);
 	$isset_txt_category = isset($_GET["txt_category"])&&!empty($_GET["txt_category"]);
+	if (isset($_GET["txt_title"])&&!empty($_GET["txt_title"])){
+		$title = $_GET["txt_title"];
+	}
+	else {
+		$title = "orange";
+	}
 ?>
-	<main>
-		<div class="container mt-1">
+	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: url('<?php echo first_pixabay_fullhd($title); ?>');">
+		<div class="container mt-2">
 		<?php 
 				if($isset_txt&&$isset_txt_category){
 					$txt_id = $_GET["txt_id"];

@@ -18,6 +18,22 @@
 				echo txt_preview("fallen","Fallen","novel"); 
 				echo txt_preview("haikus","Haikus","haiku");
 				echo txt_preview("haikus","Haikus","haiku");
+				// TEST
+				spl_autoload_register(function ($classe) {
+					include('classes/'. $classe .'.class.php');
+				});
+				$id = 7;
+				$texte = new Texte($id);
+				echo $texte->txtPreview();
+
+				// $idpoeme = 8;
+				// $poeme = new Texte($idpoeme);
+				// echo $poeme->txtPreview();
+
+				// $idHaiku = 9;
+				// $haiku = new Texte($idHaiku);
+				// echo $haiku->txtPreview();
+				//
 			?>
 		</section>
 		<section class="container-fluid row">

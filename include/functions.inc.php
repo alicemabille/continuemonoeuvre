@@ -121,7 +121,7 @@ function check_signup() : string {
 
         $user = new Utilisateur($username, $user_email, $birthdate, $password, $user_tel);
         
-        if ($user->check_username() && $user->check_mail() && $user->check_num() && $user->check_naissance() && $user->check_mdp()) {
+        if ($user->checkUsername() && $user->checkMail() && $user->checkNum() && $user->checkNaissance() && $user->checkMdp()) {
             $user->addToDatabase();
             $verifKey = $user->__getCleVerification();
             send_signup_mail($user_email, $username, $verifKey);
@@ -146,7 +146,7 @@ function check_signin() : string {
 
         if ($session->connection()) {
             // Nom utilisateur + mdp corrects
-            if ($session->is_active_account()) {
+            if ($session->isActiveAccount()) {
                 // Le compte a été validé par mail
                 $_SESSION['username'] = $_POST['username'];
                 $_SESSION['session'] = true;
@@ -368,17 +368,6 @@ function edit_text(string $text_id, string $text_to_add) : void {
     //fclose($file);
     //fclose($temp_file);
     //rename("text-examples/".$text_id."_temp.txt", "text-examples/".$text_id.".txt");
-}
-
-function modif_db_ddl(string $requests) {
-    require('../conf/connexionbd.conf.php');
-
-    $mysqli = new mysqli($host, $username, $password, $database, $port);
-    $result = $mysqli->multi_query($requests);
-    if (!$result) {
-        echo $mysqli->error;
-    }
-    $mysqli->close();
 }
 
 include "api-keys.inc.php";

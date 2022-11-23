@@ -11,7 +11,13 @@
                 if($_SESSION["session"]==true) {
                     if(isset($_POST["editor-textArea"])&&!empty($_POST["editor-textArea"])){
                         $title = (isset($_POST["title"])&&!empty($_POST["title"]))? $_POST["title"] : explode(" ",$_POST["editor-textArea"])[0];
-                        echo txt_display($_POST["editor-textArea"], $title);
+						spl_autoload_register(function ($classe) {
+							include('classes/'. $classe .'.class.php');
+						});
+						$date = date("Y-m-d H:i:s");
+						$id = Texte::creerTexte($title, $_POST["editor-textArea"], $_SESSION['username'], $date, $_POST['category']);
+						$texte = new Texte($id);
+						echo $texte->txtFull();
                     }
                 }
                 else {

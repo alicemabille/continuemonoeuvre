@@ -8,10 +8,6 @@
             $this->mdpUtilisateur = $mdpUtilisateur;
         }
 
-        public static function is_connected():string {
-            return session_status() === PHP_SESSION_ACTIVE;
-        }
-
         public function connection():bool {
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
@@ -32,7 +28,7 @@
             return password_verify($this->mdpUtilisateur, $mdp);
         }
 
-        public function is_active_account():bool {
+        public function isActiveAccount():bool {
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "

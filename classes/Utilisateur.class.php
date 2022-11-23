@@ -52,7 +52,7 @@
             return $res;
         }
         
-        public function check_username():bool {
+        public function checkUsername():bool {
             $res = false;
             $err = "";
             if (strlen($this->nomUtilisateur) >= 5 && strlen($this->nomUtilisateur) <= 20) {
@@ -87,7 +87,7 @@
             return $res;
         }
 
-        public function check_mail():bool {
+        public function checkMail():bool {
             $res = false;
             $err = "";
             if (filter_var($this->mailUtilisateur, FILTER_VALIDATE_EMAIL)) {
@@ -118,7 +118,7 @@
             return $res;
         }
 
-        public function check_num():bool {
+        public function checkNum():bool {
             $res = false;
             $err = "";
             echo "DEBUG : taille du numéro de téléphone : ". strlen($this->numTelUtilisateur);
@@ -141,7 +141,7 @@
             return $res;
         }
 
-        public function check_naissance():bool {
+        public function checkNaissance():bool {
             $res = false;
             $err = "";
             $format = "Y-m-d"; // AAAA-MM-JJ
@@ -166,7 +166,7 @@
             return $res;
         }
 
-        public function check_mdp():bool {
+        public function checkMdp():bool {
             $res = false;
             $err = "";
             if ((strlen($this->mdpUtilisateur) >= 8) && (strlen($this->mdpUtilisateur) <= 20)) { // minimum 8 caractères et maximum 20 caractères

@@ -39,7 +39,6 @@
          * 
          * @param string $titre Titre du texte
          * @param string $contenu Contenu du texte
-         * @param string $imageURL URL de l'image (->stockage en BLOB dans la BD)
          * @param string $auteur Nom d'utilisateur de l'auteur (->table ecrire)
          * @param string $date Date à laquelle le texte à été créé (->table ecrire)
          * @param string $type Type du texte : roman, poème, haiku. Par défaut roman
@@ -297,6 +296,78 @@
                 }
                 $mysqli->close();
             }
+        }
+
+        /**
+         * Renvoie la date de dernière modification d'un texte
+         * @return string La date de dernière modification
+         */
+        public function getLastModifiedDate():string {
+            $res = "<i class='fa-solid fa-clock-rotate-left'></i> ";
+            require('conf/connexionbd.conf.php');
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "
+                SELECT date_ecrit FROM ecrire WHERE id_ecrit=? ORDER BY date_ecrit DESC;
+            ";
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("i", $this->idTexte);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                $lastModified = new DateTime($row['date_ecrit']);
+                $stmt->close();
+            }
+            $mysqli->close();
+            
+            // Comparaison avec la date actuelle
+            $now = new DateTime('now');
+            $interval = $now->diff($lastModified);
+
+            // Temps UNIX
+            $secondsNow = time();
+            $secondsLastModified = $lastModified->getTimestamp();
+            $secondsInterval = $secondsNow - $secondsLastModified;
+
+            if ($secondsInterval > 3600) {
+                // supérieur à 1h
+                if ($secondsInterval > 86400) {
+                    // supérieur à 1j
+                    $res .= "modifié il y a ". $interval->format('%dj');
+                } else {
+                    // supérieur ou égal à 1h et inférieur à 24h
+                    $res .= "modifié il y a ". $interval->format('%hh');
+                }
+            } else {
+                // inférieur à 1h
+                $res .= "modifié récemment";
+            }
+            return $res;
+        }
+
+        /**
+         * Renvoie l'auteur de la dernière modification d'un texte
+         * @return string Le lien vers la page de l'auteur
+         */
+        public function getLastModifiedAuthor():string {
+            $res = "<i class='fa-solid fa-user'></i> ";
+            require('conf/connexionbd.conf.php');
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "
+                SELECT nom_auteur FROM ecrire WHERE id_ecrit=? ORDER BY date_ecrit DESC;
+            ";
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("i", $this->idTexte);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                $lastModified = $row['nom_auteur'];
+                $res = "<a href='profil.php?profil=". $lastModified ."'>". $lastModified ."</a>";
+                $stmt->close();
+            }
+            $mysqli->close();
+            return $res;
         }
 
         public function __getId():int {

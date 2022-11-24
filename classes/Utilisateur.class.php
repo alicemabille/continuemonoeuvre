@@ -121,7 +121,6 @@
         public function checkNum():bool {
             $res = false;
             $err = "";
-            echo "DEBUG : taille du numéro de téléphone : ". strlen($this->numTelUtilisateur);
             if (strlen($this->numTelUtilisateur) == 10) {
                 if (ctype_digit($this->numTelUtilisateur)) {
                     if (substr($this->numTelUtilisateur, 0, 2) == "06" || substr($this->numTelUtilisateur, 0, 2) == "07") {

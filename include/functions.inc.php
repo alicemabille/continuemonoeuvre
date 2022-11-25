@@ -153,7 +153,7 @@ function check_signin() : string {
 	            $isset_txt_category = isset($_GET["txt_category"])&&!empty($_GET["txt_category"]);
                 if($isset_txt&&$isset_txt_category){
                     //Redirection vers un texte
-                    header('Location: lecture.php?txt_id='.$_GET["txt_id"].'&txt_category='.$_GET["txt_category"]);
+                    header('Location: lecture.php?txt_id='.$_GET["txt_id"]);
                 }
                 else {
                     // Redirection vers la page d'accueil

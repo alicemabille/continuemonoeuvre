@@ -21,6 +21,7 @@
 			<!-- Links -->
 			<h6 class="text-uppercase fw-bold mb-4">Plan du site</h6>
 			<p><a href="index.php" class="text-reset">Accueil</a></p>
+			<p><a href="recherche-images.php" class="text-reset">Rechercher des images</a></p>
 			<p><a href="connexion.php" class="text-reset">Connexion</a></p>
 			<p><a href="inscription.php" class="text-reset">Inscription</a></p>
 			<p><a href="profil.php" class="text-reset">Profil utilisateur</a></p>
@@ -36,9 +37,9 @@
 			<p><a href="https://www.cyu.fr/licence-informatique-1" class="text-reset" target="_blank">Licence informatique à CYU</a></p>
 			<p><figure id='pixabay_rights'>
 					<a href='https://pixabay.com/fr/' target='_blank'>
-						<img src='./images/droits_pixabay.png' alt='Images provided by Pixabay'/>
+						<img class="img-fluid rounded" src='./images/droits_pixabay_sombre.png' alt='Images provided by Pixabay' style="max-width : 50%;"/>
 					</a>
-					<figcaption>Images fournies par Pixabay_API</figcaption>
+					<figcaption>Images fournies par Pixabay</figcaption>
 				</figure>
 			</p>
 			</div>

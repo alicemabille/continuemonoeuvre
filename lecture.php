@@ -12,7 +12,7 @@
     $title = $texte->__getTitre();
 
 ?>
-	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: url('<?php echo first_pixabay_fullhd($title); ?>');">
+	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: <?php echo $texte->getImage(); ?>');">
 		<div class="container mt-2">
 		<?php 
 			if($_SESSION["session"]==true) {
@@ -27,6 +27,12 @@
 							<button class="btn btn-primary">Contribuer à ce texte</button>
 							</form>
 							</div>';
+						if($texte->getLastModifiedAuthor()==$_SESSION["username"]){
+							echo '<form class="col-md-4 col-sm-6 m-1" action="recherche-images.php?txt_id='.$txt_id.'" method="post">
+									<input type="hidden" name="txt_id" value="'.$txt_id.'" >
+									<button class="btn btn-primary">Changer l\'illustration</button>
+								</form>';
+						}
 					}
 					else{
 						echo $texte->txtPreview();

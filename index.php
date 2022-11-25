@@ -9,7 +9,7 @@
 	$titre = "Accueil";
 	include "include/header.inc.php"; 
 ?>
-	<main class="background-image" style="background-image: url(/images/writing-pixabay.jpg); margin-bottom: 0px;">
+	<main class="background-image pb-3" style="background-image: url(/images/writing-pixabay.jpg); margin-bottom: 0px;">
 		<section class="container">
 			<h2 class="text-light">Poste un texte et laisse les autres le continuer ! Ajoute ton grain de sel et crée des œuvres aux côtés d'autres internautes !</h2>
 		</section>
@@ -57,9 +57,9 @@
 				}
 			?>
 		</section>
-		<section class="container-fluid row">
+		<section class="container-fluid row mb-3">
 			<form action="nouveau-texte.php" class="d-grid">
-				<button type="submit" class="btn btn-dark btn-lg">Publier un texte</button>
+				<button type="submit" class="btn btn-dark btn-lg btn-block">Publier un texte</button>
 			</form>
 		</section>
 	</main>

@@ -58,6 +58,11 @@
 			<a href="index.php" class="navbar-brand"><img src="images/logo.png" alt="Continue mon &oelig;uvre" id="logo-header" class="rounded" style="width:50px;">	Continue mon &oelig;uvre</a>
 			<!-- Navbar links -->
 			<ul class="navbar-nav">
+				<li class='nav-item'>
+					<a class='nav-link ".<?php echo active_page('recherche-images.php'); ?>."' href='recherche-images.php'>
+						Chercher des images
+					</a>
+				</li>
 			<?php
 					if (isset($_SESSION['session']) && !empty($_SESSION['session']) && $_SESSION['session']) {
 						// Session active

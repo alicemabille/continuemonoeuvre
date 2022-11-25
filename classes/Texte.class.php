@@ -140,6 +140,8 @@
                 "<h3 class='p-2'>". $this->titre ."</h3>\n\t\t\t\t"
                 .$res."<div class='preview-text-image container-fluid p-5 mb-0 bg-image' style=\"background-image: ". $bg ."\">
                 <a href=\"lecture.php?txt_id=".$this->idTexte."\" class=\"btn btn-outline-light\" role=\"button\">Lire la suite</a></div> \n\t\t\t
+                <p><i class='fa-solid fa-user'></i> <a href='#' class='link-light'>". self::getLastModifiedAuthor() ."</a></p>
+                <p><i class='fa-solid fa-clock-rotate-left'></i> ". self::getLastModifiedDate() ."</p>
                 </article> \n";
             // $res = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
             //     "<h3 class='p-2'>". $this->titre ."</h3>\n\t\t\t\t"
@@ -311,7 +313,8 @@
          * @return string La date de dernière modification
          */
         public function getLastModifiedDate():string {
-            $res = "<i class='fa-solid fa-clock-rotate-left'></i> ";
+            // $res = "<i class='fa-solid fa-clock-rotate-left'></i> ";
+            $res = "";
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "
@@ -341,14 +344,14 @@
                 // supérieur à 1h
                 if ($secondsInterval > 86400) {
                     // supérieur à 1j
-                    $res .= "modifié il y a ". $interval->format('%dj');
+                    $res .= "il y a ". $interval->format('%dj');
                 } else {
                     // supérieur ou égal à 1h et inférieur à 24h
-                    $res .= "modifié il y a ". $interval->format('%hh');
+                    $res .= "il y a ". $interval->format('%hh');
                 }
             } else {
                 // inférieur à 1h
-                $res .= "modifié récemment";
+                $res .= "récemment";
             }
             return $res;
         }
@@ -358,7 +361,8 @@
          * @return string Le lien vers la page de l'auteur
          */
         public function getLastModifiedAuthor():string {
-            $res = "<i class='fa-solid fa-user'></i> ";
+            // $res = "<i class='fa-solid fa-user'></i> ";
+            $res = "";
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "

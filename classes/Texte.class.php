@@ -7,7 +7,7 @@
         private string $titre;
         private string $contenu;
         private string $type;
-        // attribut image
+        private string $image="";
         public const MAX_TXT_PREVIEW_LENGTH = 1000;
         public const MAX_POEM_LENGTH = 20;
 
@@ -31,7 +31,9 @@
             $this->titre = $fetch['titre_texte'];
             $this->contenu = $fetch['contenu_texte'];
             $this->type = $fetch['type_texte'];
-            // image ?
+            if ($fetch['image_texte'] !== null) {
+                $this->image = $fetch['image_texte'];
+            }
         }
 
         /**
@@ -52,25 +54,24 @@
             if ($imageURL !== null) {
                 $image = file_get_contents($imageURL);
                 $queryTexte = "
-                    INSERT INTO texte(titre_texte, contenu_texte, image_texte)
-                        VALUES(?, ?, ?);
+                    INSERT INTO texte(titre_texte, contenu_texte, type_texte, image_texte)
+                        VALUES(?, ?, ?, ?);
                 ";
                 $stmtTexte = $mysqli->prepare($queryTexte);
                 if ($stmtTexte) {
-                    $stmtTexte->bind_param("sss", $titre, $contenu, $image);
+                    $stmtTexte->bind_param("ssss", $titre, $contenu, $type, $image);
                     $stmtTexte->execute();
                     $stmtTexte->close();
                 }
             } else {
                 $queryTexte = "
-                    INSERT INTO texte(titre_texte, contenu_texte)
-                        VALUES(?, ?);
+                    INSERT INTO texte(titre_texte, contenu_texte, type_texte)
+                        VALUES(?, ?, ?);
                 ";
                 $stmtTexte = $mysqli->prepare($queryTexte);
                 if ($stmtTexte) {
-                    $stmtTexte->bind_param("ss", $titre, $contenu);
+                    $stmtTexte->bind_param("sss", $titre, $contenu, $type);
                     $stmtTexte->execute();
-                    $codeTexte = $stmtTexte->errno;
                     $stmtTexte->close();
                 }
             }
@@ -128,11 +129,23 @@
                 $res = "<p class='alert alert-danger'>Catégorie de texte inconnue.</p>";
             }
 
+            if ($this->image == "") {
+                // Si pas d'image -> image par défaut
+                $bg = "url('images/logo.png');";
+            } else {
+                $bg = "url(data:photo/jpeg;base64,". base64_encode($this->image) .");";
+            }
+
             $res = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
                 "<h3 class='p-2'>". $this->titre ."</h3>\n\t\t\t\t"
-                .$res."<div class='preview-text-image container-fluid p-5 mb-0 bg-image' style=\"background-image: url(".first_pixabay($this->titre).");\">
+                .$res."<div class='preview-text-image container-fluid p-5 mb-0 bg-image' style=\"background-image: ". $bg ."\">
                 <a href=\"lecture.php?txt_id=".$this->idTexte."\" class=\"btn btn-outline-light\" role=\"button\">Lire la suite</a></div> \n\t\t\t
                 </article> \n";
+            // $res = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
+            //     "<h3 class='p-2'>". $this->titre ."</h3>\n\t\t\t\t"
+            //     .$res."<img width='300px' src='data:photo/jpeg;base64,". base64_encode($this->image) ."'\">
+            //     <a href=\"lecture.php?txt_id=".$this->idTexte."\" class=\"btn btn-outline-light\" role=\"button\">Lire la suite</a>\n\t\t\t
+            //     </article> \n";
             return $res;
         }
 
@@ -358,7 +371,8 @@
                 $result = $stmt->get_result();
                 $row = $result->fetch_assoc();
                 $lastModified = $row['nom_auteur'];
-                $res = "<a href='profil.php?profil=". $lastModified ."'>". $lastModified ."</a>";
+                // $res = "<a href='profil.php?profil=". $lastModified ."'>". $lastModified ."</a>";
+                $res = $lastModified;
                 $stmt->close();
             }
             $mysqli->close();
@@ -379,6 +393,33 @@
 
         public function __getType():string {
             return $this->type;
-        }   
+        }
+
+        public function getImage():string {
+            return base64_encode($this->image);
+        }
+
+        public function setImage(string $newURL):void {
+            $newImage = file_get_contents($newURL);
+            $newImage = addslashes($newImage);
+
+            // Modification de l'attribut
+            $this->image = $newImage;
+
+            // Modification de la BD
+            require('conf/connexionbd.conf.php');
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "
+                UPDATE texte SET image_texte WHERE id_texte=?;
+            ";
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("s", $this->idTexte);
+                $stmt->execute();
+                $stmt->close();
+            }
+            $mysqli->close();
+            
+        }
     }
 ?>

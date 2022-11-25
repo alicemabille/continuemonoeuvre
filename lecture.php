@@ -36,9 +36,9 @@
 									.'<button class="btn btn-primary">Changer l\'illustration</button>
 								</form>';
 						}
-						if(isset($_POST("txt_image"))&&!empty($_POST["txt_image"])) {
-							$txt->setImage();
-						}
+						// if(isset($_POST["txt_image"])&&!empty($_POST["txt_image"])) {
+						// 	$txt->setImage();
+						// }
 					}
 					else{
 						echo $texte->txtPreview();

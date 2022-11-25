@@ -3,7 +3,7 @@
         <label class="text-light col-4" for="category-select">Catégorie</label>
         <select class="form-select mt-2 mb-2 col-4 col-md-4" id="category-select" name="category">
             <option value="roman">Roman</option>
-            <option value="poem">Poème</option>
+            <option value="poeme">Poème</option>
             <option value="haiku">Haikus</option>
         </select>
         <label class="text-light col-4" for="title-input">Titre</label>

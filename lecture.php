@@ -12,7 +12,7 @@
     $title = $texte->__getTitre();
 
 ?>
-	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: <?php echo $texte->getImage(); ?>');">
+	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image : url(data:image/png;base64,<?php echo $texte->getImage(); ?>)">
 		<div class="container mt-2">
 		<?php 
 			if($_SESSION["session"]==true) {
@@ -20,6 +20,7 @@
 					$txt_id = $_GET["txt_id"];
 					$txt_category = $texte->__getType();
 					if($_SESSION['session']==true){
+						echo "<img class='img-fluid rounded'>";
                         echo $texte->txtFull();
 						echo '<div class="row">';
 						include "include/gif-board.inc.php";
@@ -27,11 +28,16 @@
 							<button class="btn btn-primary">Contribuer à ce texte</button>
 							</form>
 							</div>';
+						echo $_SESSION["username"];
+						echo $texte->getLastModifiedAuthor();
 						if($texte->getLastModifiedAuthor()==$_SESSION["username"]){
-							echo '<form class="col-md-4 col-sm-6 m-1" action="recherche-images.php?txt_id='.$txt_id.'" method="post">
-									<input type="hidden" name="txt_id" value="'.$txt_id.'" >
-									<button class="btn btn-primary">Changer l\'illustration</button>
+							echo '<form class="col-md-4 col-sm-6 m-1" action="recherche-images.php?txt_id='.$txt_id.'" method="post">'
+									//<input type="hidden" name="txt_id" value="'.$txt_id.'" >
+									.'<button class="btn btn-primary">Changer l\'illustration</button>
 								</form>';
+						}
+						if(isset($_POST("txt_image"))&&!empty($_POST["txt_image"])) {
+							$txt->setImage();
 						}
 					}
 					else{

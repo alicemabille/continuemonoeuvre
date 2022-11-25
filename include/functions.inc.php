@@ -498,6 +498,9 @@ function get_videos(string $q) : string{
  * Avoir les photos demandées par l'user
  */
 function get_images(string $q) : string{
+    if(isset($_GET["txt_id"])&&!empty($_GET["txt_id"])){
+        $form = 'method="post" action="lecture.php?txt_id='.$_GET["txt_id"].'"';
+    }
     $str='<div id="pixabay_img_list" class="row">';
     $def_q = explorer($q);
     $datas = decode_json_photos($def_q);
@@ -510,8 +513,11 @@ function get_images(string $q) : string{
         for ($i=0;$i<RESULTS_MAX;$i+=2){
         //$photo_page = $photos[$i]->pageURL;
         $str .='<div class="preview_gif col-5 m-1">
-                    <input type="image" class="rounded img-fluid" src="'.$photos[$i]->webformatURL.'" alt="'.$photos[$i]->pageURL.'">
-                    <input type="image" class="rounded img-fluid" src="'.$photos[$i+1]->webformatURL.'" alt="'.$photos[$i+1]->pageURL.'">
+                    <form '.$form.'>
+                        <input name="txt_image" value="'.$photos[$i]->webformatURL.'" type="image" class="rounded img-fluid" src="'.$photos[$i]->webformatURL.'" alt="'.$photos[$i]->pageURL.'">
+                    </form><form>
+                        <input name="txt_image" value="'.$photos[$i+1]->webformatURL.'" type="image" class="rounded img-fluid" src="'.$photos[$i+1]->webformatURL.'" alt="'.$photos[$i+1]->pageURL.'">
+                    </form>
                 </div>';
         }
     }

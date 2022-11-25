@@ -127,14 +127,11 @@
             } else {
                 $res = "<p class='alert alert-danger'>Catégorie de texte inconnue.</p>";
             }
-            if($_SESSION['session']==true){
-                $href = "lecture.php";
-            }
 
             $res = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
                 "<h3 class='p-2'>". $this->titre ."</h3>\n\t\t\t\t"
                 .$res."<div class='preview-text-image container-fluid p-5 mb-0 bg-image' style=\"background-image: url(".first_pixabay($this->titre).");\">
-                <a href=\"".$href."?txt_id=".$this->idTexte."\" class=\"btn btn-info\" role=\"button\">Lire la suite</a></div> \n\t\t\t
+                <a href=\"lecture.php?txt_id=".$this->idTexte."\" class=\"btn btn-outline-light\" role=\"button\">Lire la suite</a></div> \n\t\t\t
                 </article> \n";
             return $res;
         }
@@ -219,8 +216,6 @@
                 if (isset($_POST['editor-textArea']) && !empty($_POST['editor-textArea'])) {
                     // print_r($_POST['editor-textArea']);
                     $this->editText($_POST["editor-textArea"], $auteur, $date);
-                } else {
-                    echo "<p class='alert alert-primary mt-2'>Could not get text area content.</p>";
                 }
             } else {
                 echo "<p class='alert alert-primary mt-2'>L'id du texte à modifier n'a pas pu être récupéré.</p>";

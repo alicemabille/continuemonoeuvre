@@ -15,6 +15,7 @@
 	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: url('<?php echo first_pixabay_fullhd($title); ?>');">
 		<div class="container mt-2">
 		<?php 
+			if($_SESSION["session"]==true) {
 				if($isset_txt){
 					$txt_id = $_GET["txt_id"];
 					$txt_category = $texte->__getType();
@@ -34,6 +35,10 @@
 				else{
 					echo "<p class='alert alert-warning'>Pas de texte à afficher.</p>";
 				}
+			}
+			else {
+				echo "<a class='btn btn-info' role='button' href='connexion.php'>Se connecter</a>";
+			}
 		?>
 		</div>
 	</main>

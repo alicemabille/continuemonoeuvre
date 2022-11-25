@@ -15,16 +15,17 @@
 		</section>
 		<section class="container-fluid row">
 			<?php 
-				echo txt_preview("fallen","Fallen","novel"); 
-				echo txt_preview("haikus","Haikus","haiku");
-				echo txt_preview("haikus","Haikus","haiku");
+				$txt_ids = last_modified_txts_ids();
 				// TEST
 				spl_autoload_register(function ($classe) {
 					include('classes/'. $classe .'.class.php');
 				});
-				$id = 7;
-				$texte = new Texte($id);
-				echo $texte->txtPreview();
+				for($i=0; $i<3; $i++){
+					if($txt_ids[$i]!=null){
+						$texte = new Texte($txt_ids[$i]);
+						echo $texte->txtPreview();
+					}
+				}
 
 				// $idpoeme = 8;
 				// $poeme = new Texte($idpoeme);
@@ -34,6 +35,26 @@
 				// $haiku = new Texte($idHaiku);
 				// echo $haiku->txtPreview();
 				//
+			?>
+		</section>
+		<section class="container-fluid row">
+			<?php
+				for($i=3; $i<6; $i++){
+					if($txt_ids[$i]!=null){
+						$texte = new Texte($txt_ids[$i]);
+						echo $texte->txtPreview();
+					}
+				}
+			?>
+		</section>
+		<section class="container-fluid row">
+			<?php
+				for($i=6; $i<12; $i++){
+					if($txt_ids[$i]!=null){
+						$texte = new Texte($txt_ids[$i]);
+						echo $texte->txtPreview();
+					}
+				}
 			?>
 		</section>
 		<section class="container-fluid row">

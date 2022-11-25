@@ -53,23 +53,24 @@
 <body class="bg-primary bg-light">
   <header>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-		<!-- Logo -->
-		
-		<a href="index.php" class="navbar-brand"><img src="images/logo.png" alt="Continue mon &oelig;uvre" id="logo-header" class="rounded" style="width:50px;">	Continue mon &oelig;uvre</a>
-		<!-- Navbar links -->
-		<ul class="navbar-nav">
-		<?php
-				if (isset($_SESSION['session']) && !empty($_SESSION['session']) && $_SESSION['session']) {
-					// Session active
-					echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('profil.php') ."' href='profil.php'>". $_SESSION['username'] ."</a></li>";
-					echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('deconnexion.php') ."' href='deconnexion.php'>Se déconnecter</a></li>";
-				} else {
-					// Pas de session
-					echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('connexion.php') ."' href='connexion.php'>Se connecter</a></li>";
-					echo "<li class='nav-item' id='signup-nav-item'><a class='nav-link ". active_page('inscription.php') ."' href='inscription.php'>S'inscrire</a></li>";
-				}
-			?>
-			<!-- <li class="nav-item" id="color-mode-button"><button class="nav-link" id="style_button"></button></li> -->
-      	</ul>
+		<div class="container-fluid">
+			<!-- Logo -->
+			<a href="index.php" class="navbar-brand"><img src="images/logo.png" alt="Continue mon &oelig;uvre" id="logo-header" class="rounded" style="width:50px;">	Continue mon &oelig;uvre</a>
+			<!-- Navbar links -->
+			<ul class="navbar-nav">
+			<?php
+					if (isset($_SESSION['session']) && !empty($_SESSION['session']) && $_SESSION['session']) {
+						// Session active
+						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('profil.php') ."' href='profil.php'>". $_SESSION['username'] ."</a></li>";
+						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('deconnexion.php') ."' href='deconnexion.php'>Se déconnecter</a></li>";
+					} else {
+						// Pas de session
+						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('connexion.php') ."' href='connexion.php'>Se connecter</a></li>";
+						echo "<li class='nav-item' id='signup-nav-item'><a class='nav-link ". active_page('inscription.php') ."' href='inscription.php'>S'inscrire</a></li>";
+					}
+				?>
+				<!-- <li class="nav-item" id="color-mode-button"><button class="nav-link" id="style_button"></button></li> -->
+			</ul>
+		</div>
     </nav>
   </header>

@@ -15,11 +15,8 @@ require_once 'phpmailer/SMTP.php';
  * @param int $n
  * @return int the position of the nth occurence of $needle in $haystack
  */
-function strnpos(string $haystack, string $needle, int $n = 0) : int {
-    return strpos($haystack, $needle, 
-        $n > 1 ?
-        strnpos($haystack, $needle, $n - 1) + strlen($needle) : 0
-    );
+function strnpos(string $haystack, string $needle, int $n) : int {
+    return strpos($haystack, $needle, ($n > 1) ? strnpos($haystack, $needle, $n - 1) + strlen($needle) : 0);
 }
 
 /**
@@ -172,7 +169,35 @@ function check_signin() : string {
     return $err;
 }
 
-
+/**
+ * Renvoie les id des derniers textes modifiés
+ * @return array(string) les id des textes
+ */
+function last_modified_txts_ids() : array {
+    require('conf/connexionbd.conf.php');
+    $mysqli = new mysqli($host, $username, $password, $database, $port);
+    $query = "
+        SELECT date_ecrit, id_texte FROM ecrire
+        JOIN texte ON ecrire.id_ecrit = texte.id_texte
+        ORDER BY date_ecrit DESC;
+    ";
+    $stmt = $mysqli->prepare($query);
+    if ($stmt) {
+        //$stmt->bind_param("i", $this->idTexte);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $array = array();
+        $i = 0;
+        while ($row = $result->fetch_assoc()) {
+            $array[$i] = ($row["id_texte"]);
+            $i++;
+        }
+        $stmt->close();
+    }
+    $mysqli->close();
+    
+    return $array;
+}
 
 const MAX_TXT_PREVIEW_LENGTH = 1000;
 const MAX_POEM_LENGTH = 20;
@@ -197,6 +222,7 @@ function txt_preview(string $filename, ?string $title="", ?string $category="nov
                 $txt = substr($txt, 0, MAX_POEM_LENGTH*11);
             }*/
             $txt = substr($txt, 0, strnpos($txt, "\n\n", 2));
+            $txt .= strnpos($txt, "\n\n", 2);
             $txt .= "</pre>";
         }
         else if($category=="haiku"){

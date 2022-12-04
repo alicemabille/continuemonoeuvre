@@ -383,6 +383,26 @@
             return $res;
         }
 
+        public function getReactions():string {
+            $res = "\n<div class='card-group'>";
+            require 'conf/connexionbd.conf.php';
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "SELECT nom_auteur_reaction, url_reaction FROM reagir WHERE id_texte_reaction = ?;";
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("i", $this->idTexte);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    // Affichage des réaction des utilisateurs
+                    $res .= "\n\t<div class='card'>\n\t\t<img src='". $row['url_reaction'] ."' class='card-img-top' alt='reaction gif'>";
+                    $res .= "\n\t\t<div class='card-body'>\n\t\t\t<p class='card-text'>Par ". $row['nom_auteur_reaction'] ."</p>\n\t\t</div>\n\t</div>";
+                }
+            }
+            $res .= "\n</div>";
+            return $res;
+        }
+
         public function __getId():int {
             return $this->idTexte;
         }

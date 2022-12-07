@@ -9,7 +9,7 @@
 			<!-- Grid column -->
 			<div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
 			<!-- Content -->
-			<h6 class="text-uppercase fw-bold mb-4">Continue mon &oelig;uvre</h6>
+			<h2 class="text-uppercase fw-bold mb-4 fs-5">Continue mon &oelig;uvre</h2>
 			<p>Site web réalisé par Christella ARISTOR, Florent COURTIN et Alice MABILLE 
 				dans le cadre de la mineure développement web avancé en L3 Informatique à Cergy-Paris Université.
 			</p>
@@ -19,7 +19,7 @@
 			<!-- Grid column -->
 			<div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
 			<!-- Links -->
-			<h6 class="text-uppercase fw-bold mb-4">Plan du site</h6>
+			<h2 class="text-uppercase fw-bold mb-4 fs-5">Plan du site</h2>
 			<p><a href="index.php" class="text-reset">Accueil</a></p>
 			<p><a href="recherche-images.php" class="text-reset">Rechercher des images</a></p>
 			<p><a href="connexion.php" class="text-reset">Connexion</a></p>
@@ -32,23 +32,22 @@
 			<!-- Grid column -->
 			<div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
 			<!-- Links -->
-			<h6 class="text-uppercase fw-bold mb-4">Liens utiles</h6>
+			<h2 class="text-uppercase fw-bold mb-4 fs-5">Liens utiles</h2>
 			<p><a href="https://github.com/alicemabille/continuemonoeuvre" class="text-reset" target="_blank">GitHub</a></p>
 			<p><a href="https://www.cyu.fr/licence-informatique-1" class="text-reset" target="_blank">Licence informatique à CYU</a></p>
-			<p><figure id='pixabay_rights'>
+			<figure id='pixabay_rights'>
 					<a href='https://pixabay.com/fr/' target='_blank'>
 						<img class="img-fluid rounded" src='./images/droits_pixabay_sombre.png' alt='Images provided by Pixabay' style="max-width : 50%;"/>
 					</a>
 					<figcaption>Images fournies par Pixabay</figcaption>
 				</figure>
-			</p>
 			</div>
 
 
 			<!-- Grid column -->
 			<div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-md-0 mb-4">
 			<!-- Links -->
-			<h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+			<h2 class="text-uppercase fw-bold mb-4 fs-5">Contact</h2>
 			<p>continuemonoeuvre@alwaysdata.net</p><p>
 			</div>
 

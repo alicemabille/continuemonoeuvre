@@ -19,10 +19,10 @@
 	<!-- search engine optimizaion -->
 	<?php if((active_page("index.php")=="active")||(active_page("connexion.php")=="active")||(active_page("lecture.php")=="active")){
 		echo '<link rel="canonical" href="https://continuemonoeuvre.alwaysdata.net"/>';
-		echo '<meta name=”robots” content=”index, nofollow”>';
+		echo '<meta name="robots" content="index, nofollow">';
 		}
 		else{
-			echo '<meta name=”robots” content=”noindex, nofollow”>';
+			echo '<meta name="robots" content="noindex, nofollow">';
 		}
 
 		$description = "Site de création collective de textes : romans, poèmes, nouvelles, pièces de théâtre, etc. Chacun peut continuer des textes précédemment écrits par d'autres.";
@@ -66,12 +66,12 @@
 			<?php
 					if (isset($_SESSION['session']) && !empty($_SESSION['session']) && $_SESSION['session']) {
 						// Session active
-						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('profil.php') ."' href='profil.php'>". $_SESSION['username'] ."</a></li>";
-						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('deconnexion.php') ."' href='deconnexion.php'>Se déconnecter</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('profil.php') ."' href='profil.php'>". $_SESSION['username'] ."</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('deconnexion.php') ."' href='deconnexion.php'>Se déconnecter</a></li>";
 					} else {
 						// Pas de session
-						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('connexion.php') ."' href='connexion.php'>Se connecter</a></li>";
-						echo "<li class='nav-item' id='signup-nav-item'><a class='nav-link ". active_page('inscription.php') ."' href='inscription.php'>S'inscrire</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('connexion.php') ."' href='connexion.php'>Se connecter</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('inscription.php') ."' href='inscription.php'>S'inscrire</a></li>";
 					}
 				?>
 				<!-- <li class="nav-item" id="color-mode-button"><button class="nav-link" id="style_button"></button></li> -->

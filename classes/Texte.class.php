@@ -151,6 +151,37 @@
             return $res;
         }
 
+        public function txtPreviewCard():string {
+            $res = $this->contenu;
+            if ($this->type == "poeme") {
+                $res = "<pre class='p-4 text-left'>". $res ."</pre>";
+            } else if ($this->type == "haiku") {
+                $res = "<pre class='p-4 text-center'>". $res ."</pre>";
+            } else if ($this->type == "roman") {
+                $res = "<p class='p-4 text-left'>".str_replace("\n\n","</p><p>",$res)."</p>";
+            } else {
+                $res = "<p class='alert alert-danger'>Catégorie de texte inconnue.</p>";
+            }
+
+            $imgCard = "<img src='images/logo.png' class='card-img-top' alt='image par défaut'/>";
+            if ($this->image !== "") {
+                $imgCard = "<img src='data:photo/jpeg;base64,". base64_encode($this->image) ."' class='card-img-top' alt='image associée à ". $this->titre ."'>";
+            }
+
+            $res = "<div class='col'>
+                        <div class='card h-100 bg-dark text-light'>
+                            ". $imgCard ."
+                            <div class='card-body'>
+                                <h3 class='card-title'>". $this->titre ."</h3>
+                                ". $res ."
+                                <p class='card-text'><small class='text-muted'><i class='fa-solid fa-clock-rotate-left'></i> ". self::getLastModifiedDate() ." par ". self::getLastModifiedAuthor() ."</small></p>
+                                <a href='lecture.php?txt_id=". $this->idTexte ."' class='btn btn-info'>Lire la suite</a>
+                            </div>
+                        </div>
+                    </div>";
+            return $res;
+        }
+
         /**
          * Transforms full text into a pretty html piece of code. To be used when user is connected.
          * @return string html containing full story

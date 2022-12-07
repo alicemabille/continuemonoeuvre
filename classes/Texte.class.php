@@ -203,7 +203,7 @@
             }
             $res = "<article class=\"text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
                 ucfirst($this->titre)."</h3>\n\t\t\t\t"
-                .$res."\n\t\t\t </article> \n";
+                .$res."\n\t\t\t <p class='text-light fs-6 fw-light'><i class='fa-solid fa-clock-rotate-left'></i> il y a ". self::getLastModifiedDate() ." par ". self::getLastModifiedAuthor() ."</small></p></article> \n";
             return $res;
         }
 
@@ -415,7 +415,8 @@
         }
 
         public function getReactions():string {
-            $res = "\n<div class='card-group'>";
+            // $res = "\n<div class='card-group'>";
+            $res = "<div class='row row-cols-1 row-cols-md-3 g-4'>";
             require 'conf/connexionbd.conf.php';
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "SELECT nom_auteur_reaction, url_reaction FROM reagir WHERE id_texte_reaction = ?;";
@@ -426,8 +427,16 @@
                 $result = $stmt->get_result();
                 while ($row = $result->fetch_assoc()) {
                     // Affichage des réaction des utilisateurs
-                    $res .= "\n\t<div class='card'>\n\t\t<img src='". $row['url_reaction'] ."' class='card-img-top' alt='reaction gif'>";
-                    $res .= "\n\t\t<div class='card-body'>\n\t\t\t<p class='card-text'>Par ". $row['nom_auteur_reaction'] ."</p>\n\t\t</div>\n\t</div>";
+                    // $res .= "\n\t<div class='card'>\n\t\t<img src='". $row['url_reaction'] ."' class='card-img-top' alt='reaction gif'>";
+                    // $res .= "\n\t\t<div class='card-body'>\n\t\t\t<p class='card-text'>Par ". $row['nom_auteur_reaction'] ."</p>\n\t\t</div>\n\t</div>";
+                    $res .= "<div class='col'>
+                                <div class='card bg-dark text-light' style='max-width: 18rem;'>
+                                    <img src='". $row['url_reaction'] ."' class='card-img-top' alt='reaction gif'>
+                                    <div class='card-body'>
+                                        <p class='card-text'>Par ". $row['nom_auteur_reaction'] ."</p>
+                                    </div>
+                                </div>
+                            </div>";
                 }
             }
             $res .= "\n</div>";
@@ -448,6 +457,10 @@
 
         public function __getType():string {
             return $this->type;
+        }
+
+        public function image():bool {
+            return $this->image !== "";
         }
 
         public function getImage():string {

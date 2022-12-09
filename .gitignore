@@ -1,2 +1,4 @@
+#Clé API pixabay
+./include/config_api.inc.php
 /conf/
 include/config/config-mail.inc.php

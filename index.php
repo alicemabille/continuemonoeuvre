@@ -11,57 +11,31 @@
 ?>
 	<main class="background-image pb-3" style="background-image: url(/images/writing-pixabay.jpg); margin-bottom: 0px;">
 		<section class="container">
-			<h2 class="text-light">Poste un texte et laisse les autres le continuer ! Ajoute ton grain de sel et crée des œuvres aux côtés d'autres internautes !</h2>
+			<h1 class="text-light">Poste un texte et laisse les autres le continuer ! Ajoute ton grain de sel et crée des œuvres aux côtés d'autres internautes !</h1>
 		</section>
-		<section class="container-fluid row">
-			<?php 
-				$txt_ids = last_modified_txts_ids();
-				// TEST
-				spl_autoload_register(function ($classe) {
-					include('classes/'. $classe .'.class.php');
-				});
-				for($i=0; $i<3; $i++){
-					if($txt_ids[$i]!=null){
-						$texte = new Texte($txt_ids[$i]);
-						echo $texte->txtPreview();
-					}
-				}
+		
 
-				// $idpoeme = 8;
-				// $poeme = new Texte($idpoeme);
-				// echo $poeme->txtPreview();
-
-				// $idHaiku = 9;
-				// $haiku = new Texte($idHaiku);
-				// echo $haiku->txtPreview();
-				//
-			?>
-		</section>
-		<section class="container-fluid row">
-			<?php
-				for($i=3; $i<6; $i++){
-					if($txt_ids[$i]!=null){
-						$texte = new Texte($txt_ids[$i]);
-						echo $texte->txtPreview();
+		<section class="container-fluid row mt-5">
+			<h2 class="text-center text-light">Les derniers textes édités</h2>
+			<div class="row row-cols-1 row-cols-md-3 g-4">
+				<?php
+					$txt_ids = last_modified_txts_ids();
+					spl_autoload_register(function ($classe) {
+						include('classes/'. $classe .'.class.php');
+					});
+					for ($i=0; $i<12; $i++) {
+						if ($txt_ids[$i] != null) {
+							$texte = new Texte($txt_ids[$i]);
+							echo $texte->txtPreviewCard();
+						}
 					}
-				}
-			?>
-		</section>
-		<section class="container-fluid row">
-			<?php
-				for($i=6; $i<12; $i++){
-					if($txt_ids[$i]!=null){
-						$texte = new Texte($txt_ids[$i]);
-						echo $texte->txtPreview();
-					}
-				}
-			?>
-		</section>
-		<section class="container-fluid row mb-3">
-			<form action="nouveau-texte.php" class="d-grid">
+				?>
+			</div>
+			<form action="nouveau-texte.php" class="d-grid mt-2">
 				<button type="submit" class="btn btn-dark btn-lg btn-block">Publier un texte</button>
 			</form>
 		</section>
+
 	</main>
 	
 	<?php include "include/footer.inc.php"; ?>

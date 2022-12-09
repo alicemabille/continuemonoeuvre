@@ -11,8 +11,12 @@
     $texte = new Texte($_GET["txt_id"]);
     $title = $texte->__getTitre();
 
+	if ($texte->image()) {
+		echo "<main class='bg-image pb-3 pt-2 mb-0 mt-0' style='background-image : url(data:photo/jpeg;base64,". $texte->getImage() .")'>";
+	} else {
+		echo "<main class='bg-image pb-3 pt-2 mb-0 mt-0' style='background-image : url(images/writing-pixabay.jpg);'>";
+	}
 ?>
-	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: <?php echo $texte->getImage(); ?>');">
 		<div class="container mt-2">
 		<?php 
 			if($_SESSION["session"]==true) {
@@ -28,11 +32,15 @@
 							</form>
 							</div>';
 						if($texte->getLastModifiedAuthor()==$_SESSION["username"]){
-							echo '<form class="col-md-4 col-sm-6 m-1" action="recherche-images.php?txt_id='.$txt_id.'" method="post">
-									<input type="hidden" name="txt_id" value="'.$txt_id.'" >
-									<button class="btn btn-primary">Changer l\'illustration</button>
+							echo '<form class="col-md-4 col-sm-6 m-1" action="recherche-images.php?txt_id='.$txt_id.'" method="post">'
+									//<input type="hidden" name="txt_id" value="'.$txt_id.'" >
+									.'<button class="btn btn-primary">Changer l\'illustration</button>
 								</form>';
 						}
+						echo $texte->getReactions();
+						// if(isset($_POST["txt_image"])&&!empty($_POST["txt_image"])) {
+						// 	$txt->setImage();
+						// }
 					}
 					else{
 						echo $texte->txtPreview();

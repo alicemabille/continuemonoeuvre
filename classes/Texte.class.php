@@ -203,7 +203,7 @@
             }
             $res = "<article class=\"text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
                 ucfirst($this->titre)."</h3>\n\t\t\t\t"
-                .$res."\n\t\t\t <p class='text-light fs-6 fw-light'><i class='fa-solid fa-clock-rotate-left'></i> il y a ". self::getLastModifiedDate() ." par ". self::getLastModifiedAuthor() ."</small></p></article> \n";
+                .$res."\n\t\t\t <p class='text-light fs-6 fw-light'><i class='fa-solid fa-clock-rotate-left'></i> il y a ". self::getLastModifiedDate() ." par <a href='https://continuemonoeuvre.alwaysdata.net/profil-view.php?user=". self::getLastModifiedAuthor() ."'>". self::getLastModifiedAuthor() ."</a></small></p></article> \n";
             return $res;
         }
 

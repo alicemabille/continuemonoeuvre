@@ -24,7 +24,8 @@
 			<p><a href="recherche-images.php" class="text-reset">Rechercher des images</a></p>
 			<p><a href="connexion.php" class="text-reset">Connexion</a></p>
 			<p><a href="inscription.php" class="text-reset">Inscription</a></p>
-			<p><a href="profil.php" class="text-reset">Profil utilisateur</a></p>
+			<!--<p><a href="profil.php?user=" class="text-reset">Profil utilisateur</a></p>-->
+			<?php echo "<p><a href='profil.php?user=". $_SESSION['username'] ."' class='text-reset'>Profil utilisateur</a></p>"; ?>
 			<p><a href="nouveau-texte.php" class="text-reset">Nouveau texte</a></p>
 			</div>
 

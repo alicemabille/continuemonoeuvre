@@ -66,7 +66,7 @@
 			<?php
 					if (isset($_SESSION['session']) && !empty($_SESSION['session']) && $_SESSION['session']) {
 						// Session active
-						echo "<li class='nav-item'><a class='nav-link ". active_page('profil.php') ."' href='profil.php'>". $_SESSION['username'] ."</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('profil.php?user=') ."' href='profil.php?user=". $_SESSION['username'] ."'>". $_SESSION['username'] ."</a></li>";
 						echo "<li class='nav-item'><a class='nav-link ". active_page('deconnexion.php') ."' href='deconnexion.php'>Se déconnecter</a></li>";
 					} else {
 						// Pas de session

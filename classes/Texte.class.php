@@ -7,7 +7,7 @@
         private string $titre;
         private string $contenu;
         private string $type;
-        // attribut image
+        private string $image="";
         public const MAX_TXT_PREVIEW_LENGTH = 1000;
         public const MAX_POEM_LENGTH = 20;
 
@@ -31,7 +31,9 @@
             $this->titre = $fetch['titre_texte'];
             $this->contenu = $fetch['contenu_texte'];
             $this->type = $fetch['type_texte'];
-            // image ?
+            if ($fetch['image_texte'] !== null) {
+                $this->image = $fetch['image_texte'];
+            }
         }
 
         /**
@@ -52,25 +54,24 @@
             if ($imageURL !== null) {
                 $image = file_get_contents($imageURL);
                 $queryTexte = "
-                    INSERT INTO texte(titre_texte, contenu_texte, image_texte)
-                        VALUES(?, ?, ?);
+                    INSERT INTO texte(titre_texte, contenu_texte, type_texte, image_texte)
+                        VALUES(?, ?, ?, ?);
                 ";
                 $stmtTexte = $mysqli->prepare($queryTexte);
                 if ($stmtTexte) {
-                    $stmtTexte->bind_param("sss", $titre, $contenu, $image);
+                    $stmtTexte->bind_param("ssss", $titre, $contenu, $type, $image);
                     $stmtTexte->execute();
                     $stmtTexte->close();
                 }
             } else {
                 $queryTexte = "
-                    INSERT INTO texte(titre_texte, contenu_texte)
-                        VALUES(?, ?);
+                    INSERT INTO texte(titre_texte, contenu_texte, type_texte)
+                        VALUES(?, ?, ?);
                 ";
                 $stmtTexte = $mysqli->prepare($queryTexte);
                 if ($stmtTexte) {
-                    $stmtTexte->bind_param("ss", $titre, $contenu);
+                    $stmtTexte->bind_param("sss", $titre, $contenu, $type);
                     $stmtTexte->execute();
-                    $codeTexte = $stmtTexte->errno;
                     $stmtTexte->close();
                 }
             }
@@ -128,11 +129,56 @@
                 $res = "<p class='alert alert-danger'>Catégorie de texte inconnue.</p>";
             }
 
+            if ($this->image == "") {
+                // Si pas d'image -> image par défaut
+                $bg = "url('images/logo.png');";
+            } else {
+                $bg = "url(data:photo/jpeg;base64,". base64_encode($this->image) .");";
+            }
+
             $res = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
                 "<h3 class='p-2'>". $this->titre ."</h3>\n\t\t\t\t"
-                .$res."<div class='preview-text-image container-fluid p-5 mb-0 bg-image' style=\"background-image: url(".first_pixabay($this->titre).");\">
+                .$res."<div class='preview-text-image container-fluid p-5 mb-0 bg-image' style=\"background-image: ". $bg ."\">
                 <a href=\"lecture.php?txt_id=".$this->idTexte."\" class=\"btn btn-outline-light\" role=\"button\">Lire la suite</a></div> \n\t\t\t
+                <p><i class='fa-solid fa-user'></i> <a href='#' class='link-light'>". self::getLastModifiedAuthor() ."</a></p>
+                <p><i class='fa-solid fa-clock-rotate-left'></i> ". self::getLastModifiedDate() ."</p>
                 </article> \n";
+            // $res = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
+            //     "<h3 class='p-2'>". $this->titre ."</h3>\n\t\t\t\t"
+            //     .$res."<img width='300px' src='data:photo/jpeg;base64,". base64_encode($this->image) ."'\">
+            //     <a href=\"lecture.php?txt_id=".$this->idTexte."\" class=\"btn btn-outline-light\" role=\"button\">Lire la suite</a>\n\t\t\t
+            //     </article> \n";
+            return $res;
+        }
+
+        public function txtPreviewCard():string {
+            $res = $this->contenu;
+            if ($this->type == "poeme") {
+                $res = "<pre class='p-4 text-left'>". $res ."</pre>";
+            } else if ($this->type == "haiku") {
+                $res = "<pre class='p-4 text-center'>". $res ."</pre>";
+            } else if ($this->type == "roman") {
+                $res = "<p class='p-4 text-left'>".str_replace("\n\n","</p><p>",$res)."</p>";
+            } else {
+                $res = "<p class='alert alert-danger'>Catégorie de texte inconnue.</p>";
+            }
+
+            $imgCard = "<img src='images/logo.png' class='card-img-top' alt='image par défaut'/>";
+            if ($this->image !== "") {
+                $imgCard = "<img src='data:photo/jpeg;base64,". base64_encode($this->image) ."' class='card-img-top' alt='image associée à ". $this->titre ."'>";
+            }
+
+            $res = "<div class='col'>
+                        <div class='card h-100 bg-dark text-light'>
+                            ". $imgCard ."
+                            <div class='card-body'>
+                                <h3 class='card-title'>". $this->titre ."</h3>
+                                ". $res ."
+                                <p class='card-text'><small class='text-muted'><i class='fa-solid fa-clock-rotate-left'></i> ". self::getLastModifiedDate() ." par ". self::getLastModifiedAuthor() ."</small></p>
+                                <a href='lecture.php?txt_id=". $this->idTexte ."' class='btn btn-info'>Lire la suite</a>
+                            </div>
+                        </div>
+                    </div>";
             return $res;
         }
 
@@ -157,7 +203,7 @@
             }
             $res = "<article class=\"text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
                 ucfirst($this->titre)."</h3>\n\t\t\t\t"
-                .$res."\n\t\t\t </article> \n";
+                .$res."\n\t\t\t <p class='text-light fs-6 fw-light'><i class='fa-solid fa-clock-rotate-left'></i> il y a ". self::getLastModifiedDate() ." par <a href='https://continuemonoeuvre.alwaysdata.net/profil-view.php?user=". self::getLastModifiedAuthor() ."'>". self::getLastModifiedAuthor() ."</a></small></p></article> \n";
             return $res;
         }
 
@@ -298,7 +344,8 @@
          * @return string La date de dernière modification
          */
         public function getLastModifiedDate():string {
-            $res = "<i class='fa-solid fa-clock-rotate-left'></i> ";
+            // $res = "<i class='fa-solid fa-clock-rotate-left'></i> ";
+            $res = "";
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "
@@ -328,14 +375,14 @@
                 // supérieur à 1h
                 if ($secondsInterval > 86400) {
                     // supérieur à 1j
-                    $res .= "modifié il y a ". $interval->format('%dj');
+                    $res .= "il y a ". $interval->format('%dj');
                 } else {
                     // supérieur ou égal à 1h et inférieur à 24h
-                    $res .= "modifié il y a ". $interval->format('%hh');
+                    $res .= "il y a ". $interval->format('%hh');
                 }
             } else {
                 // inférieur à 1h
-                $res .= "modifié récemment";
+                $res .= "récemment";
             }
             return $res;
         }
@@ -345,7 +392,8 @@
          * @return string Le lien vers la page de l'auteur
          */
         public function getLastModifiedAuthor():string {
-            $res = "<i class='fa-solid fa-user'></i> ";
+            // $res = "<i class='fa-solid fa-user'></i> ";
+            $res = "";
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "
@@ -358,10 +406,40 @@
                 $result = $stmt->get_result();
                 $row = $result->fetch_assoc();
                 $lastModified = $row['nom_auteur'];
-                $res = "<a href='profil.php?profil=". $lastModified ."'>". $lastModified ."</a>";
+                // $res = "<a href='profil.php?profil=". $lastModified ."'>". $lastModified ."</a>";
+                $res = $lastModified;
                 $stmt->close();
             }
             $mysqli->close();
+            return $res;
+        }
+
+        public function getReactions():string {
+            // $res = "\n<div class='card-group'>";
+            $res = "<div class='row row-cols-1 row-cols-md-3 g-4'>";
+            require 'conf/connexionbd.conf.php';
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "SELECT nom_auteur_reaction, url_reaction FROM reagir WHERE id_texte_reaction = ?;";
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("i", $this->idTexte);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    // Affichage des réaction des utilisateurs
+                    // $res .= "\n\t<div class='card'>\n\t\t<img src='". $row['url_reaction'] ."' class='card-img-top' alt='reaction gif'>";
+                    // $res .= "\n\t\t<div class='card-body'>\n\t\t\t<p class='card-text'>Par ". $row['nom_auteur_reaction'] ."</p>\n\t\t</div>\n\t</div>";
+                    $res .= "<div class='col'>
+                                <div class='card bg-dark text-light' style='max-width: 18rem;'>
+                                    <img src='". $row['url_reaction'] ."' class='card-img-top' alt='reaction gif'>
+                                    <div class='card-body'>
+                                        <p class='card-text'>Par ". $row['nom_auteur_reaction'] ."</p>
+                                    </div>
+                                </div>
+                            </div>";
+                }
+            }
+            $res .= "\n</div>";
             return $res;
         }
 
@@ -379,6 +457,37 @@
 
         public function __getType():string {
             return $this->type;
-        }   
+        }
+
+        public function image():bool {
+            return $this->image !== "";
+        }
+
+        public function getImage():string {
+            return base64_encode($this->image);
+        }
+
+        public function setImage(string $newURL):void {
+            $newImage = file_get_contents($newURL);
+            $newImage = addslashes($newImage);
+
+            // Modification de l'attribut
+            $this->image = $newImage;
+
+            // Modification de la BD
+            require('conf/connexionbd.conf.php');
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "
+                UPDATE texte SET image_texte WHERE id_texte=?;
+            ";
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("s", $this->idTexte);
+                $stmt->execute();
+                $stmt->close();
+            }
+            $mysqli->close();
+            
+        }
     }
 ?>

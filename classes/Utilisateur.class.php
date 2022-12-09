@@ -74,57 +74,6 @@
             return $res;
         }
 
-        // private static function sendSignupMail(string $mailUtilisateur, string $nomUtilisateur, string $cleVerificationUtilisateur):bool {
-        //     $res = false;
-        //     require_once "include/config-mail.inc.php";
-        //     try {
-        //         // SMTP configuration
-        //         $mailer = new PHPMailer(true); // true enables Exception
-        //         //$mailer->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
-        //         $mailer->isSMTP();
-        //         $mailer->CharSet = "utf-8";
-        //         $mailer->Host = $mail_host;
-        //         $mailer->Port = $mail_port;
-        //         $mailer->SMTPAuth = true; // just try false to see Exception
-        //         $mailer->Username = $mail_username;
-        //         $mailer->Password = $mail_password;
-        //         $mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        
-        //         // the mail
-        //         $mailer->setFrom($mail_username, 'Continue mon œuvre');
-        //         $mailer->addReplyTo($mail_username, 'Continue mon œuvre');
-        //         $mailer->addAddress($mailUtilisateur, $nomUtilisateur); // le destinataire
-        //         $mailer->addCC($mail_username, 'webmaster');
-        //         // $mailer->addBCC($mail_username, 'webmaster');
-        //         $mailer->Subject = 'Bienvenue sur Continue Mon Œuvre';
-        //         $mailer->isHTML(true);
-        //         $mailContent =
-        //         "
-        //         <!DOCTYPE HTML>
-        //         <html>
-        //             <head>
-        //                 <title>Bienvenue sur Continue mon œuvre</title>
-        //             </head>
-        //             <body style='font-family: Arial;margin:0; text-align:center; background:#f7f8f9; height:100%;'>
-        //                 <h1>Bonjour ".$nomUtilisateur." !</h1>
-        //                 <p>Vous venez de créer un compte sur <a href='https://continuemonoeuvre.alwaysdata.net/'>Continue Mon Œuvre</a>.</p> 
-        //                 <p>Vous pouvez dès maintenant lire les ouvrages créés par la communauté et écrire à votre tour.</p>
-        //                 <p>Pour confirmer votre inscription, c'est ici : </p>
-        //                 <a href='continuemonoeuvre.alwaysdata.net/verification.php?user=". urlencode($nomUtilisateur) ."&key=". urlencode($cleVerificationUtilisateur) ."'>lien</a>
-        //                 <p>À bientôt !</p>
-        //             </body>
-        //         </html>";
-        //         $mailer->Body = $mailContent;
-        //         // $mail->msgHTML(file_get_contents('contents.html'), __DIR__);
-        //         // $mail->addAttachment('path/to/file.pdf', 'file.pdf');
-        //         $mailer->send();
-        //         $res = true;
-        //     } catch (Exception $e) {
-        //         echo 'Message could not be sent. Mailer Error: '. $mailer->ErrorInfo;
-        //     }
-        //     return $res;
-        // }
-
         private function connectionToDatabase():object {
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
@@ -268,39 +217,53 @@
             return $res;
         }
 
+        public function getTextsIds():array {
+            $tab = array();
+            require 'conf/connexionbd.conf.php';
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "SELECT * FROM ecrire WHERE nom_auteur = ?";
+
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("s", $this->nomUtilisateur);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    array_push($tab, $row['id_ecrit']);
+                }
+                $stmt->close();
+            }
+            $mysqli->close();
+            return $tab;
+        }
+
+        public function getReactionsIds():array {
+            $tab = array();
+            require 'conf/connexionbd.conf.php';
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "SELECT * FROM reagir WHERE nom_auteur_reaction = ?";
+
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("s", $this->nomUtilisateur);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    array_push($tab, $row['id_texte_reaction']);
+                }
+                $stmt->close();
+            }
+            $mysqli->close();
+            return $tab;
+        }
+
         // Fonctions :
             // Changement de mot de passe
-            // Affichage de la page profil -> functions.inc.php pour profil
-            // Array de tous les ids textes écrits par l'utilisateur -> functions.inc.php pour profil
-            // Array de tous les ids textes modifiés par l'utilisateur
+            // Affichage de la page profil -> functions.inc.php pour profil OK
+            // Array de tous les ids textes écrits par l'utilisateur -> modif bd nécessaire
+            // Array de tous les ids textes modifiés par l'utilisateur OK
             // Array de tous les ids de réactions faites par l'utilisateur
-            // Nombre de modifications faites sur un texte donné
-
-        
-        public function changeMdp(string $nouveauMdp):string {
-            if ((strlen($nouveauMdp) >= 8) && (strlen($nouveauMdp) <= 20)) { // minimum 8 caractères et maximum 20 caractères
-                if (preg_match('/[a-z]/', $nouveauMdp)) { // au moins 1 min
-                    if (preg_match('/[A-Z]/', $nouveauMdp)) { // au moins 1 MAJ
-                        if (preg_match('/[0-9]/', $nouveauMdp)) { // au moins 1 chiffre 
-                            // $res = true;
-                            $this->__setMdpChiff(password_hash($nouveauMdp, PASSWORD_DEFAULT));
-
-
-
-
-                        } else {
-                            $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 chiffre.</p>";
-                        }
-                    } else {
-                        $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 majuscule.</p>";
-                    }
-                } else {
-                    $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 minuscule.</p>";
-                }
-            } else {
-                $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 8 caractères.</p>";
-            }
-        }
+            // Nombre de modifications faites sur un texte donné -> modif bd nécessaire
         
 
         public function __getNom():string {

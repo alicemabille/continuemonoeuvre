@@ -4,10 +4,22 @@
         private int $texte;
         private string $url;
 
-        public function __construct(string $auteur, int $texte, string $url) {
+        public function __construct(string $auteur, int $texte) {
             $this->auteur = $auteur;
             $this->texte = $texte;
-            $this->url = $url;
+            require 'conf/connexionbd.conf.php';
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $query = "SELECT url_reaction FROM reagir WHERE nom_auteur_reaction = ? AND id_texte_reaction = ?;";
+            $stmt = $mysqli->prepare($query);
+            if ($stmt) {
+                $stmt->bind_param("si", $auteur, $texte);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                $this->url = $row['url_reaction'];
+                $stmt->close();
+            }
+            $mysqli->close();
         }
 
         /**
@@ -91,6 +103,20 @@
             }
             $mysqli->close();
 
+        }
+
+        public function getReactionCard():string {
+            $texte = new Texte($this->texte);
+
+            $res = "<div class='col'>
+                        <div class='card bg-dark text-light' style='max-width: 18rem;'>
+                            <img src='". $this->url ."' class='card-img-top' alt='reaction gif'>
+                            <div class='card-body'>
+                                <p class='card-text'><a href='lecture.php?txt_id=". $texte->__getId() ."' class='link-light'>". $texte->__getTitre() ."</a></p>
+                            </div>
+                        </div>
+                    </div>";
+            return $res;
         }
 
         public function __getAuteur():string {

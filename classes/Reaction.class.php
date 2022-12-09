@@ -66,6 +66,7 @@
          * Supprime la réaction du texte courant de la base de données
          */
         public function suppReaction():void {
+            // À appeller avant l'affichage des réactions
             require 'conf/connexionbd.conf.php';
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "SELECT COUNT(*) FROM reagir WHERE nom_auteur_reaction = ? AND id_texte_reaction = ?;";
@@ -89,6 +90,7 @@
                 }
             }
             $mysqli->close();
+
         }
 
         public function __getAuteur():string {

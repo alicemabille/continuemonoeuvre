@@ -19,10 +19,10 @@
 	<!-- search engine optimizaion -->
 	<?php if((active_page("index.php")=="active")||(active_page("connexion.php")=="active")||(active_page("lecture.php")=="active")){
 		echo '<link rel="canonical" href="https://continuemonoeuvre.alwaysdata.net"/>';
-		echo '<meta name=”robots” content=”index, nofollow”>';
+		echo '<meta name="robots" content="index, nofollow">';
 		}
 		else{
-			echo '<meta name=”robots” content=”noindex, nofollow”>';
+			echo '<meta name="robots" content="noindex, nofollow">';
 		}
 
 		$description = "Site de création collective de textes : romans, poèmes, nouvelles, pièces de théâtre, etc. Chacun peut continuer des textes précédemment écrits par d'autres.";
@@ -41,7 +41,7 @@
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css">
 	<!-- Icons -->
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<!-- jQuery library -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js"></script>
 	<!-- Popper JS -->
@@ -66,12 +66,12 @@
 			<?php
 					if (isset($_SESSION['session']) && !empty($_SESSION['session']) && $_SESSION['session']) {
 						// Session active
-						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('profil.php') ."' href='profil.php'>". $_SESSION['username'] ."</a></li>";
-						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('deconnexion.php') ."' href='deconnexion.php'>Se déconnecter</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('profil.php?user=') ."' href='profil.php?user=". $_SESSION['username'] ."'>". $_SESSION['username'] ."</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('deconnexion.php') ."' href='deconnexion.php'>Se déconnecter</a></li>";
 					} else {
 						// Pas de session
-						echo "<li class='nav-item' id='signin-nav-item'><a class='nav-link ". active_page('connexion.php') ."' href='connexion.php'>Se connecter</a></li>";
-						echo "<li class='nav-item' id='signup-nav-item'><a class='nav-link ". active_page('inscription.php') ."' href='inscription.php'>S'inscrire</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('connexion.php') ."' href='connexion.php'>Se connecter</a></li>";
+						echo "<li class='nav-item'><a class='nav-link ". active_page('inscription.php') ."' href='inscription.php'>S'inscrire</a></li>";
 					}
 				?>
 				<!-- <li class="nav-item" id="color-mode-button"><button class="nav-link" id="style_button"></button></li> -->

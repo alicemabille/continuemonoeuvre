@@ -112,15 +112,18 @@ function check_signup() : string {
             $user_tel = $_POST["tel"];
         }
 
-        spl_autoload_register(function ($classe) {
-            include('classes/'. $classe .'.class.php');
-        });
+        include('classes/Utilisateur.class.php');
 
-        $user = new Utilisateur($username, $user_email, $birthdate, $password, $user_tel);
+        // $user = new Utilisateur($username, $user_email, $birthdate, $password, $user_tel);
         
-        if ($user->checkUsername() && $user->checkMail() && $user->checkNum() && $user->checkNaissance() && $user->checkMdp()) {
-            $user->addToDatabase();
-            $verifKey = $user->__getCleVerification();
+        // if ($user->checkUsername() && $user->checkMail() && $user->checkNum() && $user->checkNaissance() && $user->checkMdp()) {
+        //     $user->addToDatabase();
+        //     $verifKey = $user->__getCleVerification();
+        //     send_signup_mail($user_email, $username, $verifKey);
+        //     return "<p class='alert alert-primary mt-2'>Votre compte a bien été créé. Un mail de confirmation vous a été envoyé.</p>";
+        // }
+        $verifKey = Utilisateur::inscription($username, $user_email, $birthdate, $password, $user_tel);
+        if (strlen($verifKey) > 0) {
             send_signup_mail($user_email, $username, $verifKey);
             return "<p class='alert alert-primary mt-2'>Votre compte a bien été créé. Un mail de confirmation vous a été envoyé.</p>";
         }

@@ -26,6 +26,10 @@
 					if($_SESSION['session']==true){
                         echo $texte->txtFull();
 						echo '<div class="row">';
+						if (isset($_POST['gif']) && !empty($_POST['gif'])) {
+							echo Reaction::ajouterReaction($_SESSION['username'], $_GET['txt_id'], $_POST['gif']);
+						}
+						// echo "<p class='text-light'>". print_r($_POST) ."</p>";
 						include "include/gif-board.inc.php";
 						echo '<form class="col-md-4 col-sm-6 m-1" action="ecriture.php?txt_id='.$txt_id.'" method="post">
 							<button class="btn btn-primary">Contribuer à ce texte</button>

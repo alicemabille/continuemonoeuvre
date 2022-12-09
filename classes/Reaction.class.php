@@ -22,15 +22,15 @@
             require 'conf/connexionbd.conf.php';
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "SELECT COUNT(*) FROM reagir WHERE nom_auteur_reaction = ? AND id_texte_reaction = ?;";
-            $stmt->prepare($query);
+            $stmt = $mysqli->prepare($query);
             if ($stmt) {
                 $stmt->bind_param("si", $auteur, $texte);
                 $stmt->execute();
-                $stmt->close();
                 $result = $stmt->get_result();
                 $fetch = $result->fetch_assoc();
+                $stmt->close();
             }
-            $occurrence = $fetch['count'];
+            $occurrence = $fetch['COUNT(*)'];
             if ($occurrence == 0) {
                 // On ajoute la réaction au texte
                 if (self::verifUrl($url)) {
@@ -59,7 +59,7 @@
          */
         public function verifUrl(string $url):bool {
             $prefixe = "https://media.tenor/";
-            return strpos($url, $prefixe) === true;
+            return strpos($url, $prefixe) !== true;
         }
 
         /**

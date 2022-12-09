@@ -7,4 +7,5 @@
 	</div>
 	<div id="gif-list" class="row">
 	</div>
+	</form>
 </div>

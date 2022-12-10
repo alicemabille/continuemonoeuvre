@@ -460,7 +460,8 @@ function get_videos(string $q) : string{
  */
 function get_images(string $q) : string{
     if(isset($_GET["txt_id"])&&!empty($_GET["txt_id"])){
-        $form = 'method="post" action="lecture.php?txt_id='.$_GET["txt_id"].'"';
+        // $form = 'method="post" action="lecture.php?txt_id='.$_GET["txt_id"].'"';
+        $form = 'method="post" action=""';
     }
     $str='<div id="pixabay_img_list" class="row">';
     $def_q = explorer($q);

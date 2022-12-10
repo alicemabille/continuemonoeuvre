@@ -468,7 +468,8 @@
         }
 
         public function setImage(string $newURL):void {
-            $newImage = fopen($newURL, 'rb');
+            // $newImage = fopen($newURL, 'rb');
+            $newImage = file_get_contents($newURL);
             //$newImage = base64_encode(file_get_contents($newURL));
             //$newImage = addslashes($newImage);
             //echo "<img src='".$newURL."'>";
@@ -486,7 +487,7 @@
             if ($stmt) {
                 //$stmt->bind_param(":data", $newImage, PDO::PARAM_LOB);
                 //$stmt->bind_param(":id", $this->idTexte);
-                $stmt->bind_param("bi", $newImage, $this->idTexte);
+                $stmt->bind_param("si", $newImage, $this->idTexte);
                 $stmt->execute();
                 $stmt->close();
             }

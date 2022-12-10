@@ -39,9 +39,11 @@
 							</form>
 							</div>';
 						if($texte->getLastModifiedAuthor()==$_SESSION["username"]){
-							echo '<form class="col-md-4 col-sm-6 m-1" action="recherche-images.php?txt_id='.$txt_id.'" method="post">'
-									//<input type="hidden" name="txt_id" value="'.$txt_id.'" >
-									.'<button class="btn btn-primary">Changer l\'illustration</button>
+							// Destruction en cas de modification d'image précédente
+							unset($_SESSION['img_txt_modify']);
+							echo '<form class="col-md-4 col-sm-6 m-1" action="recherche-images.php?txt_id='.$txt_id.'" method="post">
+									<input type="hidden" name="txt_id_img" value="'.$txt_id.'" >
+									<button class="btn btn-primary">Changer l\'illustration</button>
 								</form>';
 						}
 						echo $texte->getReactions();

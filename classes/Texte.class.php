@@ -169,7 +169,7 @@
             }
 
             $res = "<div class='col'>
-                        <div class='card h-100 bg-dark text-light'>
+                        <div class='card h-100 bg-dark text-light' style='max-width : 80vh'>
                             ". $imgCard ."
                             <div class='card-body'>
                                 <h3 class='card-title'>". $this->titre ."</h3>
@@ -277,7 +277,7 @@
          */
         public function editText(string $textToAdd, string $auteur, string $date):void {
             // Modification de l'attribut
-            $this->contenu .= $textToAdd;
+            $this->contenu .= "\n".$textToAdd;
 
             // Mise à jour du texte dans la table texte
             require('conf/connexionbd.conf.php');
@@ -478,11 +478,11 @@
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "
-                UPDATE texte SET image_texte WHERE id_texte=?;
+                UPDATE texte SET image_texte=? WHERE id_texte=?;
             ";
             $stmt = $mysqli->prepare($query);
             if ($stmt) {
-                $stmt->bind_param("s", $this->idTexte);
+                $stmt->bind_param("s", $this->image, $this->idTexte);
                 $stmt->execute();
                 $stmt->close();
             }

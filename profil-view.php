@@ -14,8 +14,7 @@
 		<?php 
 			if(isset($_SESSION['session']) && !empty($_SESSION['session']) && $_SESSION['session']==true){
 				if(isset($_GET["user"]) && !empty($_GET["user"])){
-		    		//require "./include/functions.inc.php";
-                    echo get_userInfos_else($_GET["user"]);
+                    echo get_user_infos_else($_GET["user"]);
 				}
 				else{
 					echo "<p class='alert alert-warning'>Cette page n'existe pas ! <a href='https://continuemonoeuvre.alwaysdata.net/'>Retour à l'accueil</a></p>";

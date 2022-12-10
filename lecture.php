@@ -29,6 +29,9 @@
 						if (isset($_POST['gif']) && !empty($_POST['gif'])) {
 							echo Reaction::ajouterReaction($_SESSION['username'], $_GET['txt_id'], $_POST['gif']);
 						}
+						if (isset($_POST['txt_image']) && !empty($_POST['txt_image'])) {
+							$texte->setImage($_POST['txt_image']);
+						}
 						// echo "<p class='text-light'>". print_r($_POST) ."</p>";
 						include "include/gif-board.inc.php";
 						echo '<form class="col-md-4 col-sm-6 m-1" action="ecriture.php?txt_id='.$txt_id.'" method="post">

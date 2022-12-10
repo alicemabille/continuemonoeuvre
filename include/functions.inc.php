@@ -180,13 +180,13 @@ function last_modified_txts_ids() : array {
     require('conf/connexionbd.conf.php');
     $mysqli = new mysqli($host, $username, $password, $database, $port);
     $query = "
-        SELECT date_ecrit, id_texte FROM ecrire
+        SELECT DISTINCT date_ecrit, id_texte FROM ecrire
         JOIN texte ON ecrire.id_ecrit = texte.id_texte
+        GROUP BY id_texte
         ORDER BY date_ecrit DESC;
     ";
     $stmt = $mysqli->prepare($query);
     if ($stmt) {
-        //$stmt->bind_param("i", $this->idTexte);
         $stmt->execute();
         $result = $stmt->get_result();
         $array = array();
@@ -357,48 +357,6 @@ function txt_display(string $txt, string $title, ?string $category="novel") : st
     return $txt;
 }
 
-function check_text_edit() : void {
-    if(isset($_GET["txt_id"])&&(!empty($_GET["txt_id"])))
-    {
-        if(isset($_POST["editor-textArea"])&&(!empty($_POST["editor-textArea"]))){
-            edit_text($_GET["txt_id"], $_POST["editor-textArea"]);
-        }
-        else echo "<p class='alert alert-primary mt-2'>Could not get text area content.</p>";
-    }
-    else echo "<p class='alert alert-primary mt-2'>L'id du texte à modifier n'a pas pu être récupéré.</p>";
-}
-
-function edit_text(string $text_id, string $text_to_add) : void {
-    $filename = "text-examples/".$text_id.".txt";
-    if (is_writable($filename)) {
-        // The file pointer is at the bottom of the file hence
-        // that's where $somecontent will go when we fwrite() it.
-        if (!$fp = fopen($filename, 'a')) {
-            echo "<p class='alert alert-primary mt-2'>Cannot open file ($filename)</p>";
-            exit;
-        }
-
-        // Write $somecontent to our opened file.
-        if (fwrite($fp, $text_to_add) === FALSE) {
-            echo "<p class='alert alert-primary mt-2'>Cannot write to file ($filename)</p>";
-            exit;
-        }
-
-        echo "<p class='alert alert-primary mt-2'>Votre contribution a bien été prise en compte !.</p>";
-
-        fclose($fp);
-
-    } else {
-        echo "The file $filename is not writable";
-    }
-    //$file = fopen("text-examples/".$text_id.".txt",'r');
-    //$temp_file = fopen("text-examples/".$text_id."_temp.txt",'w');
-
-    //fclose($file);
-    //fclose($temp_file);
-    //rename("text-examples/".$text_id."_temp.txt", "text-examples/".$text_id.".txt");
-}
-
 include "api-keys.inc.php";
 define("RESULTS_MAX",20);
 
@@ -517,9 +475,11 @@ function get_images(string $q) : string{
         //$photo_page = $photos[$i]->pageURL;
         $str .='<div class="preview_gif col-5 m-1">
                     <form '.$form.'>
-                        <input name="txt_image" value="'.$photos[$i]->webformatURL.'" type="image" class="rounded img-fluid" src="'.$photos[$i]->webformatURL.'" alt="'.$photos[$i]->pageURL.'">
-                    </form><form>
-                        <input name="txt_image" value="'.$photos[$i+1]->webformatURL.'" type="image" class="rounded img-fluid" src="'.$photos[$i+1]->webformatURL.'" alt="'.$photos[$i+1]->pageURL.'">
+                        <input type="hidden" name="txt_image" value="'.$photos[$i]->webformatURL.'">
+                        <input type="image" src="'.$photos[$i]->webformatURL.'" alt="'.$photos[$i]->pageURL.'" class="rounded img-fluid">
+                    </form><form '.$form.'>
+                        <input type="hidden" name="txt_image" value="'.$photos[$i+1]->webformatURL.'" >
+                        <input type="image" class="rounded img-fluid" src="'.$photos[$i+1]->webformatURL.'" alt="'.$photos[$i+1]->pageURL.'">
                     </form>
                 </div>';
         }
@@ -528,192 +488,53 @@ function get_images(string $q) : string{
 }
 
 /**
- * Function to print user's profile (his own)
- * @param user : name of the user
- * @return String : list of informations or nothing, if the user doesn't exist
-*/
-function get_userInfos(string $user) : string {
-    include 'conf/connexionbd.conf.php';
-    $mysqli = new mysqli($host, $username, $password, $database, $port);
-    $response = "";
-    if ($mysqli != NULL){//Connexion OK 
-        $query1 = "
-            SELECT COUNT(*) FROM utilisateur WHERE nom_utilisateur='". $user ."';
-        "; //User exists ? Yes=1 or No=others
-        $result1 = $mysqli->query($query1);
-        if ($result1 != NULL){
-            $occurence = $result1;
-            if ($occurence == 1) { //User exists
-                $reponse="<article> \n <section> \n <h2>Hello ".$user." ! </h2> \n";
-                $query2 = "
-                    SELECT * FROM utilisateur WHERE nom_utilisateur='". $user ."';
-                ";//Try to take informations
-                $result2 = $mysqli->query($query2);
-                if ($result2 != NULL){ //We have informations
-                    while ($row = $result2->fetch_assoc()){
-                        $nom = $row["nom_utilisateur"];
-                        $mail = $row["mail_utilisateur"];
-                        $num = $row["num_tel_utilisateur"];
-                        $naissance = $row["naissance_utilisateur"];
-                    }
-                    $result3 ="";
-                    $query3= " 
-                        SELECT COUNT(*) FROM ecrire WHERE nom_auteur='".$user."';";
-                    $result3 = $mysqli->query($query3);//nombre d'oeuvres
-                    $occurence2=$result3;
-                    if ($result3 != NULL && $occurence2 >= 1){//Au minimum une oeuvre 
-                        $result4 = "";
-                        $query4="
-                            SELECT id_ecrit FROM ecrire WHERE nom_auteur='".$user."';";
-                        $result4=$mysqli->query($query4);
-                        if ($result4 != NULL){//We have informations
-                            $list = "<section><h2>Liste de vos œuvres</h2><p>";
-                            $i = 0;
-                            $row2 = $result4->fetch_assoc();
-                            for ($i = 0;$i<$occurence2;$i++){
-                                $list .="<li><a href='https://continuemonoeuvre.alwaysdata.net/lecture.php?text_id=".$row2[$i]."'>Oeuvre ".$i."</a></li>";
-                            }
-                            $list .="</p></section>";
-                            $reponse .= "<p>
-                                            <li>Nom : ".$nom."</li> \n  
-                                            <li>Date de naissance : ".$naissance."</li> \n 
-                                            <li> Mail : ".$mail." </li> \n 
-                                            <li> Numéro de téléphone : ".$num." </li> \n
-                                        </p>
-                                    </section>\n".$list."
-                                </article> \n"; //Edit the answer
-                            return $reponse;
-                        } else {//We don't have informations
-                            $reponse .= "<p>
-                                            <li>Nom : ".$nom."</li> \n  
-                                            <li>Date de naissance : ".$naissance."</li> \n 
-                                            <li> Mail : ".$mail." </li> \n 
-                                            <li> Numéro de téléphone : ".$num." </li> \n
-                                        </p>
-                                    </section> \n
-                                    <section>
-                                        <h2>Liste de vos oeuvres</h2>
-                                        <p>La liste de vos oeuvres sont indisponibles pour le moment.</p>
-                                    </section>
-                                </article> \n"; //Edit the answer
-                            return $reponse;
-                        }
-                    } else {//Aucune oeuvre
-                        $reponse .= "<p>
-                                        <li>Nom : ".$nom."</li> \n  
-                                        <li>Date de naissance : ".$naissance."</li> \n 
-                                        <li> Mail : ".$mail." </li> \n 
-                                        <li> Numéro de téléphone : ".$num." </li> \n
-                                    </p>
-                                </section> \n
-                            </article> \n"; //Edit the answer
-                        return $reponse;
-                    }
-                    
-                } else {//We have problem(s) not acces to user's informations
-                    $reponse .= "<p class='alert alert-warning'>Votre profil n'est pas accessible pour le moment.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' >Retour à la page d'accueil</a></p></section></article>";
-                    return $reponse;
-                }
-            } else {//User doesn't exists
-                $reponse = "<article><section><h2>Erreur</h2><p class='alert alert-warning'>Le profil de ".$user." n'existe pas.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' >Retour à la page d'accueil</a></p></section></article>";
-                return $reponse;
-            } 
-        } else {//Result NOT OK 
-            $reponse = "<article><section><h2>Erreur</h2><p class='alert alert-warning'>Ce profil n'est pas accessible'.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' >Retour à la page d'accueil</a></p></section></article>";
-            return $reponse;
-        }
-    } else {//Connexion NOT OK
-        $reponse = "<article><section><h2>Erreur</h2><p class='alert alert-warning'>Cette page est indisponible pour le moment.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' />Retour à la page d'accueil</a></p></section></article>";
-        return $reponse;
-    }
-} 
-
-/**
  * Function to see the profile of someone else 
  * @param user : name of the user
  * @return String : list of informations or nothing, if the user doesn't exist
 */
-function get_userInfos_else(String $user) : String{
+function get_user_infos_else(string $user) : string{
     include 'conf/connexionbd.conf.php';
+    spl_autoload_register(function ($classe) {
+        include('classes/'. $classe .'.class.php');
+    });
     $mysqli = new mysqli($host, $username, $password, $database, $port);
-    $response = "";
-    if ($mysqli != NULL){//Connexion OK 
-        $query1 = "
-            SELECT COUNT(*) FROM utilisateur WHERE nom_utilisateur='". $user ."';
-        "; //User exists ? Yes=1 or No=others
-        $result1 = $mysqli->query($query1);
-        if ($result1 != NULL){
-            $occurence = $result1;
-            if ($occurence == 1) { //User exists
-                $reponse="<article> \n <section> \n <h2>Bienvenue sur la page de ".$user." ! </h2> \n";
-                $query2 = "
-                    SELECT * FROM utilisateur WHERE nom_utilisateur='". $user ."';
-                ";//Try to take informations
-                $result2 = $mysqli->query($query2);
-                if ($result2 != NULL){ //We have informations
-                    while ($row = $result2->fetch_assoc()){
-                        $nom = $row["nom_utilisateur"];
-                    }
-                    $result3 ="";
-                    $query3= " 
-                        SELECT COUNT(*) FROM ecrire WHERE nom_auteur='".$user."';";
-                    $result3 = $mysqli->query($query3);//nombre d'oeuvres
-                    $occurence2=$result3;
-                    if ($result3 != NULL && $occurence2 >= 1){//Au minimum une oeuvre 
-                        $result4 = "";
-                        $query4="
-                            SELECT id_ecrit FROM ecrire WHERE nom_auteur='".$user."';";
-                        $result4=$mysqli->query($query4);
-                        if ($result4 != NULL){//We have informations
-                            $list = "<section><h2>Liste des œuvres de ".$user."</h2><p>";
-                            $i = 0;
-                            $row2 = $result4->fetch_assoc();
-                            for ($i = 0;$i<$occurence2;$i++){
-                                $list .="<li><a href='https://continuemonoeuvre.alwaysdata.net/lecture.php?text_id=".$row2[$i]."'>Oeuvre ".$i."</a></li>";
-                            }
-                            $list .="</p></section>";
-                            $reponse .= "<p>
-                                            <li>Nom : ".$nom."</li> \n  
-                                        </p>
-                                    </section>\n".$list."
-                                </article> \n"; //Edit the answer
-                            return $reponse;
-                        } else {//We don't have informations
-                            $reponse .= "<p>
-                                            <li>Nom : ".$nom."</li> \n  
-                                        </p>
-                                    </section> \n
-                                    <section>
-                                        <h2>Liste de vos oeuvres</h2>
-                                        <p>La liste des oeuvres de ".$user." sont indisponibles pour le moment.</p>
-                                    </section>
-                                </article> \n"; //Edit the answer
-                            return $reponse;
-                        }
-                    } else {//Aucune oeuvre
-                        $reponse .= "<p>
-                                        <li>Nom : ".$nom."</li> \n  
-                                    </p>
-                                </section> \n
-                            </article> \n"; //Edit the answer
-                        return $reponse;
-                    }
-                    
-                } else {//We have problem(s) not acces to user's informations
-                    $reponse .= "<p class='alert alert-warning'>Ce profil n'est pas accessible pour le moment.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' >Retour à la page d'accueil</a></p></section></article>";
-                    return $reponse;
-                }
-            } else {//User doesn't exists
-                $reponse = "<article><section><h2>Erreur</h2><p class='alert alert-warning'>Le profil de ".$user." n'existe pas.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' >Retour à la page d'accueil</a></p></section></article>";
-                return $reponse;
-            } 
-        } else {//Result NOT OK 
-            $reponse = "<article><section><h2>Erreur</h2><p class='alert alert-warning'>Ce profil n'est pas accessible'.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' >Retour à la page d'accueil</a></p></section></article>";
-            return $reponse;
-        }
-    } else {//Connexion NOT OK
-        $reponse = "<article><section><h2>Erreur</h2><p class='alert alert-warning'>Cette page est indisponible pour le moment.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' />Retour à la page d'accueil</a></p></section></article>";
-        return $reponse;
+
+    if ($mysqli == NULL) {
+        return "<p class='alert alert-warning'>Cette page est indisponible pour le moment.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' />Retour à la page d'accueil</a></p>";
+    } 
+    
+    //Connexion OK 
+    $query2 = "
+        SELECT * FROM utilisateur WHERE nom_utilisateur='". $user ."';
+    ";//Try to take informations
+    $r = $mysqli->query($query2);
+
+    if ($r == NULL) {
+        return "<p class='alert alert-warning'>Le profil de ".$user." n'existe pas.</p><p><a href='https://continuemonoeuvre.alwaysdata.net' >Retour à la page d'accueil</a></p>"; 
     }
+    
+    //We have informations
+    $query4 = "
+        SELECT ecrire.id_ecrit, texte.titre_texte FROM ecrire
+            JOIN texte ON texte.id_texte = ecrire.id_ecrit
+            WHERE nom_auteur='".$user."';";
+    $textes = $mysqli->query($query4);
+    if ($textes == NULL) {
+        return "<p class='alert alert-info'>Cet utilisateur n'a encore rien publié.</p>";
+    } 
+    //We have informations
+    $i = 0;
+    //$row2 = $textes->fetch_assoc();
+    while ($row2 = $textes->fetch_assoc()) {
+        $rows[$i] = $row2;
+    }
+
+    for ($i = 0;$i<sizeof($rows);$i++) {
+        $texte = new Texte($rows[$i]["id_ecrit"]);
+        $list .= $texte->txtPreviewCard();
+        //$list .="<li><a href='https://continuemonoeuvre.alwaysdata.net/lecture.php?text_id=".$rows[$i]["id_ecrit"]."'>".$rows[$i]["titre_texte"]."</a></li>";
+    }
+
+    return "<section><h2>Œuvres de ".$user."</h2>\n<div class='row'>".$list."</div></section>"; //Edit the answer  
 }
 ?>

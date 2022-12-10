@@ -468,11 +468,13 @@
         }
 
         public function setImage(string $newURL):void {
-            $newImage = file_get_contents($newURL);
-            $newImage = addslashes($newImage);
+            $newImage = fopen($newURL, 'rb');
+            //$newImage = base64_encode(file_get_contents($newURL));
+            //$newImage = addslashes($newImage);
+            //echo "<img src='".$newURL."'>";
 
             // Modification de l'attribut
-            $this->image = $newImage;
+            $this->image = $newURL;
 
             // Modification de la BD
             require('conf/connexionbd.conf.php');
@@ -482,7 +484,9 @@
             ";
             $stmt = $mysqli->prepare($query);
             if ($stmt) {
-                $stmt->bind_param("s", $this->image, $this->idTexte);
+                //$stmt->bind_param(":data", $newImage, PDO::PARAM_LOB);
+                //$stmt->bind_param(":id", $this->idTexte);
+                $stmt->bind_param("bi", $newImage, $this->idTexte);
                 $stmt->execute();
                 $stmt->close();
             }

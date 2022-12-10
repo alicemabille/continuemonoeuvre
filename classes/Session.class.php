@@ -2,12 +2,24 @@
     class Session {
         private string $nomUtilisateur;
         private string $mdpUtilisateur;
-
+        
+        /**
+         * __construct
+         *
+         * @param  mixed $nomUtilisateur
+         * @param  mixed $mdpUtilisateur
+         * @return void
+         */
         public function __construct(string $nomUtilisateur, string $mdpUtilisateur) {
             $this->nomUtilisateur = $nomUtilisateur;
             $this->mdpUtilisateur = $mdpUtilisateur;
         }
-
+        
+        /**
+         * Checks if the username matches the password
+         *
+         * @return bool
+         */
         public function connection():bool {
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
@@ -27,8 +39,13 @@
             $mysqli->close();
             return password_verify($this->mdpUtilisateur, $mdp);
         }
-
-        public function isActiveAccount():bool {
+        
+        /**
+         * Check if the user has activated his account using the verification key sent by email
+         *
+         * @return bool
+         */
+        public function isActiveAccount() : bool {
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "
@@ -55,4 +72,3 @@
             return $this->mdpUtilisateur;
         }
     }
-?>

@@ -95,20 +95,6 @@
         }
 
         /**
-         * Finds nth occurrence of a string in a string.
-         * @param string $haystack the string to searh in
-         * @param string $needle the string to search for
-         * @param int $n
-         * @return int the position of the nth occurence of $needle in $haystack
-         */
-        private function strnpos(string $haystack, string $needle, int $n = 0) : int {
-            return strpos($haystack, $needle, 
-                $n > 1 ?
-                strnpos($haystack, $needle, $n - 1) + strlen($needle) : 0
-            );
-        }
-
-        /**
          * Preview of the text on the homepage when no user is connected.
          * @return string html containing cropped story
          */
@@ -116,14 +102,11 @@
             $res = $this->contenu;
             if ($this->type == "poeme") {
                 $res = "<pre class='p-4 text-left'>" .$res;
-                // $res = substr($res, 0, strnpos($res, "\n\n", 2));
                 $res .= "</pre>";
             } else if ($this->type == "haiku") {
-                $res = "<pre class='p-4 text-center'>".$res;
-                // $res = substr($res, 0, strnpos($res, "\n\n", 4));
+                $res = "<pre class='p-4 text-center'>".$res;;
                 $res .= "</pre>";
             } else if ($this->type == "roman") {
-                // $res = substr($res, 0, strpos($res, "\n\n"));
                 $res = "<p class='p-4 text-left'>".str_replace("\n\n","</p><p>",$res)."</p>";
             } else {
                 $res = "<p class='alert alert-danger'>Catégorie de texte inconnue.</p>";
@@ -143,14 +126,13 @@
                 <p><i class='fa-solid fa-user'></i> <a href='#' class='link-light'>". self::getLastModifiedAuthor() ."</a></p>
                 <p><i class='fa-solid fa-clock-rotate-left'></i> ". self::getLastModifiedDate() ."</p>
                 </article> \n";
-            // $res = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
-            //     "<h3 class='p-2'>". $this->titre ."</h3>\n\t\t\t\t"
-            //     .$res."<img width='300px' src='data:photo/jpeg;base64,". base64_encode($this->image) ."'\">
-            //     <a href=\"lecture.php?txt_id=".$this->idTexte."\" class=\"btn btn-outline-light\" role=\"button\">Lire la suite</a>\n\t\t\t
-            //     </article> \n";
             return $res;
         }
-
+        
+        /**
+         * Preview of the text on the homepage when no user is connected.
+         * @return string html containing cropped story
+         */
         public function txtPreviewCard():string {
             $res = $this->contenu;
             if ($this->type == "poeme") {
@@ -344,7 +326,6 @@
          * @return string La date de dernière modification
          */
         public function getLastModifiedDate():string {
-            // $res = "<i class='fa-solid fa-clock-rotate-left'></i> ";
             $res = "";
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
@@ -392,7 +373,6 @@
          * @return string Le lien vers la page de l'auteur
          */
         public function getLastModifiedAuthor():string {
-            // $res = "<i class='fa-solid fa-user'></i> ";
             $res = "";
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
@@ -406,17 +386,21 @@
                 $result = $stmt->get_result();
                 $row = $result->fetch_assoc();
                 $lastModified = $row['nom_auteur'];
-                // $res = "<a href='profil.php?profil=". $lastModified ."'>". $lastModified ."</a>";
                 $res = $lastModified;
                 $stmt->close();
             }
             $mysqli->close();
             return $res;
         }
-
+        
+        /**
+         * Tous les gifs que les utilisateurs ont associés à ce texte
+         *
+         * @return string
+         */
         public function getReactions():string {
-            // $res = "\n<div class='card-group'>";
-            $res = "<div class='row row-cols-1 row-cols-md-3 g-4'>";
+            //$res = "<div class='row row-cols-1 row-cols-md-3 g-4'>";
+            $res = "<div class='row'>";
             require 'conf/connexionbd.conf.php';
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             $query = "SELECT nom_auteur_reaction, url_reaction FROM reagir WHERE id_texte_reaction = ?;";
@@ -426,11 +410,9 @@
                 $stmt->execute();
                 $result = $stmt->get_result();
                 while ($row = $result->fetch_assoc()) {
-                    // Affichage des réaction des utilisateurs
-                    // $res .= "\n\t<div class='card'>\n\t\t<img src='". $row['url_reaction'] ."' class='card-img-top' alt='reaction gif'>";
-                    // $res .= "\n\t\t<div class='card-body'>\n\t\t\t<p class='card-text'>Par ". $row['nom_auteur_reaction'] ."</p>\n\t\t</div>\n\t</div>";
+                    // Affichage des réactions des utilisateurs
                     $res .= "<div class='col'>
-                                <div class='card bg-dark text-light' style='max-width: 18rem;'>
+                                <div class='card bg-dark text-light' style='max-width: 10rem;'>
                                     <img src='". $row['url_reaction'] ."' class='card-img-top' alt='reaction gif'>
                                     <div class='card-body'>
                                         <p class='card-text'>Par ". $row['nom_auteur_reaction'] ."</p>
@@ -468,11 +450,7 @@
         }
 
         public function setImage(string $newURL):void {
-            // $newImage = fopen($newURL, 'rb');
             $newImage = file_get_contents($newURL);
-            //$newImage = base64_encode(file_get_contents($newURL));
-            //$newImage = addslashes($newImage);
-            //echo "<img src='".$newURL."'>";
 
             // Modification de l'attribut
             $this->image = $newURL;
@@ -485,8 +463,6 @@
             ";
             $stmt = $mysqli->prepare($query);
             if ($stmt) {
-                //$stmt->bind_param(":data", $newImage, PDO::PARAM_LOB);
-                //$stmt->bind_param(":id", $this->idTexte);
                 $stmt->bind_param("si", $newImage, $this->idTexte);
                 $stmt->execute();
                 $stmt->close();

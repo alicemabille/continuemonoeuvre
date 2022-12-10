@@ -30,7 +30,18 @@
             }
             $mysqli->close();
         }
-
+        
+        /**
+         * Ajoute l'utilisateur à la base de données et crée une clé de vérification
+         *
+         * @param  mixed $nomUtilisateur
+         * @param  mixed $mailUtilisateur
+         * @param  mixed $naissanceUtilisateur
+         * @param  mixed $mdpUtilisateur
+         * @param  mixed $numTelUtilisateur
+         * @param  mixed $compteActifUtilisateur
+         * @return string la clé de vérification
+         */
         public static function inscription(string $nomUtilisateur, string $mailUtilisateur, string $naissanceUtilisateur, string $mdpUtilisateur, string $numTelUtilisateur = '', bool $compteActifUtilisateur = false):string {
             $res = "";
             $nomUtilisateur = htmlspecialchars($nomUtilisateur);
@@ -46,14 +57,22 @@
             if (self::checkUsername($nomUtilisateur) && self::checkMail($mailUtilisateur) && self::checkNaissance($naissanceUtilisateur) && self::checkMdp($mdpUtilisateur) && self::checkNum($numTelUtilisateur)) {
                 if (self::addToDatabase($nomUtilisateur, $mailUtilisateur, $naissanceUtilisateur, $mdpUtilisateur, $numTelUtilisateur, $cleVerificationUtilisateur)) {
                     $res = $cleVerificationUtilisateur;
-                    // if (self::sendSignupMail($mailUtilisateur, $nomUtilisateur, $cleVerificationUtilisateur)) {
-                    //     $res = "<p class='alert alert-primary mt-2'>Votre compte a bien été créé. Un mail de confirmation vous a été envoyé.</p>";
-                    // }
                 }
             }
             return $res;
         }
-
+        
+        /**
+         * addToDatabase
+         *
+         * @param  mixed $nomUtilisateur
+         * @param  mixed $mailUtilisateur
+         * @param  mixed $naissanceUtilisateur
+         * @param  mixed $mdpUtilisateur
+         * @param  mixed $numTelUtilisateur
+         * @param  mixed $cleVerificationUtilisateur
+         * @return bool
+         */
         private static function addToDatabase(string $nomUtilisateur, string $mailUtilisateur, string $naissanceUtilisateur, string $mdpUtilisateur, string $numTelUtilisateur, string $cleVerificationUtilisateur):bool {
             $res = false;
             $mdpChiffUtilisateur = password_hash($mdpUtilisateur, PASSWORD_DEFAULT);
@@ -79,7 +98,13 @@
             $mysqli = new mysqli($host, $username, $password, $database, $port);
             return $mysqli;
         }
-        
+                
+        /**
+         * checkUsername
+         *
+         * @param  mixed $nomUtilisateur
+         * @return bool
+         */
         private static function checkUsername(string $nomUtilisateur):bool {
             $res = false;
             $err = "";
@@ -114,7 +139,13 @@
             echo $err;
             return $res;
         }
-
+        
+        /**
+         * checkMail
+         *
+         * @param  mixed $mailUtilisateur
+         * @return bool
+         */
         private static function checkMail(string $mailUtilisateur):bool {
             $res = false;
             $err = "";
@@ -145,7 +176,13 @@
             echo $err;
             return $res;
         }
-
+        
+        /**
+         * checkNum
+         *
+         * @param  mixed $numTelUtilisateur
+         * @return bool
+         */
         private static function checkNum(string $numTelUtilisateur):bool {
             $res = false;
             $err = "";
@@ -167,7 +204,13 @@
             echo $err;
             return $res;
         }
-
+        
+        /**
+         * checkNaissance
+         *
+         * @param  mixed $naissanceUtilisateur
+         * @return bool
+         */
         private static function checkNaissance(string $naissanceUtilisateur):bool {
             $res = false;
             $err = "";
@@ -192,31 +235,29 @@
             echo $err;
             return $res;
         }
-
+        
+        /**
+         * checkMdp
+         *
+         * @param  mixed $mdpUtilisateur
+         * @return bool
+         */
         private static function checkMdp($mdpUtilisateur):bool {
             $res = false;
             $err = "";
-            if ((strlen($mdpUtilisateur) >= 8) && (strlen($mdpUtilisateur) <= 20)) { // minimum 8 caractères et maximum 20 caractères
-                if (preg_match('/[a-z]/', $mdpUtilisateur)) { // au moins 1 min
-                    if (preg_match('/[A-Z]/', $mdpUtilisateur)) { // au moins 1 MAJ
-                        if (preg_match('/[0-9]/', $mdpUtilisateur)) { // au moins 1 chiffre 
-                            $res = true;
-                        } else {
-                            $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 chiffre.</p>";
-                        }
-                    } else {
-                        $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 majuscule.</p>";
-                    }
-                } else {
-                    $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 minuscule.</p>";
-                }
-            } else {
-                $err = "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 8 caractères.</p>";
+             // minimum 8 caractères et maximum 20 caractères, au moins 1 min, au moins 1 MAJ, au moins 1 chiffre 
+            if ((strlen($mdpUtilisateur) >= 8) && (strlen($mdpUtilisateur) <= 20) && (preg_match('/[a-z]/', $mdpUtilisateur)) && (preg_match('/[A-Z]/', $mdpUtilisateur)) && (preg_match('/[0-9]/', $mdpUtilisateur))) {
+                return true;
             }
-            echo $err;
-            return $res;
+            echo "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 chiffre, 1 majuscule, 1 minuscule et 8 caractères.</p>";
+            return false;
         }
-
+        
+        /**
+         * getTextsIds
+         *
+         * @return array
+         */
         public function getTextsIds():array {
             $tab = array();
             require 'conf/connexionbd.conf.php';
@@ -236,7 +277,12 @@
             $mysqli->close();
             return $tab;
         }
-
+        
+        /**
+         * getReactionsIds
+         *
+         * @return array
+         */
         public function getReactionsIds():array {
             $tab = array();
             require 'conf/connexionbd.conf.php';

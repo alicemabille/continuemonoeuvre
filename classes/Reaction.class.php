@@ -3,7 +3,14 @@
         private string $auteur;
         private int $texte;
         private string $url;
-
+        
+        /**
+         * __construct
+         *
+         * @param  mixed $auteur
+         * @param  mixed $texte
+         * @return void
+         */
         public function __construct(string $auteur, int $texte) {
             $this->auteur = $auteur;
             $this->texte = $texte;
@@ -104,7 +111,12 @@
             $mysqli->close();
 
         }
-
+        
+        /**
+         * Donne un code html contenant toutes les réactions à ce texte
+         *
+         * @return string
+         */
         public function getReactionCard():string {
             $texte = new Texte($this->texte);
 

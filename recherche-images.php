@@ -5,9 +5,6 @@
 ?>
 	<main class="background-image pb-3 pt-2 mb-0 mt-0" style="background-image: url(/images/writing-pixabay.jpg); margin-bottom: 0px;">
 			<?php
-				echo "DEBUG : ";
-				print_r($_POST);
-
 				if (isset($_POST['txt_id_img']) && !empty($_POST['txt_id_img'])) {
 					// une variable $_POST['txt_id_img] a été transmise depuis lecture.php pour modification d'image
 					$_SESSION['img_txt_modify'] = $_POST['txt_id_img'];

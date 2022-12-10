@@ -9,17 +9,6 @@ require_once 'phpmailer/PHPMailer.php';
 require_once 'phpmailer/SMTP.php';
 
 /**
- * Finds nth occurrence of a string in a string.
- * @param string $haystack the string to searh in
- * @param string $needle the string to search for
- * @param int $n
- * @return int the position of the nth occurence of $needle in $haystack
- */
-function strnpos(string $haystack, string $needle, int $n) : int {
-    return strpos($haystack, $needle, ($n > 1) ? strnpos($haystack, $needle, $n - 1) + strlen($needle) : 0);
-}
-
-/**
  * Echos "active" if the page passed as a parameter is the current page. Useful with bootstrap for a cool nav menu.
  * @param page : the page you want to know is active or not.
  */
@@ -34,13 +23,18 @@ function active_page(string $page) : string {
     }
 }
 
-
+/**
+ * Sends an email to inform the user a continuemonoeuvre account was created using their email adress
+ * @param string the user's email adress
+ * @param string username
+ * @param string a unique account-checking key that the user will have to enter to verify their account
+ * @return string a success or fail message
+ */
 function send_signup_mail(string $user_email, string $username, string $verifKey) : string {
     require_once "config-mail.inc.php";
     try {
         // SMTP configuration
         $mailer = new PHPMailer(true); // true enables Exception
-        //$mailer->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
         $mailer->isSMTP();
         $mailer->CharSet = "utf-8";
         $mailer->Host = $mail_host;
@@ -55,7 +49,6 @@ function send_signup_mail(string $user_email, string $username, string $verifKey
         $mailer->addReplyTo($mail_username, 'Continue mon œuvre');
         $mailer->addAddress($user_email, $username); // le destinataire
         $mailer->addCC($mail_username, 'webmaster');
-        // $mailer->addBCC($mail_username, 'webmaster');
         $mailer->Subject = 'Bienvenue sur Continue Mon Œuvre';
         $mailer->isHTML(true);
         $mailContent =
@@ -75,8 +68,6 @@ function send_signup_mail(string $user_email, string $username, string $verifKey
             </body>
         </html>";
         $mailer->Body = $mailContent;
-        // $mail->msgHTML(file_get_contents('contents.html'), __DIR__);
-        // $mail->addAttachment('path/to/file.pdf', 'file.pdf');
         $mailer->send();
         return "";
     } catch (Exception $e) {
@@ -85,7 +76,8 @@ function send_signup_mail(string $user_email, string $username, string $verifKey
 }
 
 /**
- * 
+ * Signs up an user (inserts them in the database) if correct signup information was entered.
+ * @return string a success or fail message
  */
 function check_signup() : string {
     if(isset($_POST["username"])&&(!empty($_POST["username"]))
@@ -113,15 +105,6 @@ function check_signup() : string {
         }
 
         include('classes/Utilisateur.class.php');
-
-        // $user = new Utilisateur($username, $user_email, $birthdate, $password, $user_tel);
-        
-        // if ($user->checkUsername() && $user->checkMail() && $user->checkNum() && $user->checkNaissance() && $user->checkMdp()) {
-        //     $user->addToDatabase();
-        //     $verifKey = $user->__getCleVerification();
-        //     send_signup_mail($user_email, $username, $verifKey);
-        //     return "<p class='alert alert-primary mt-2'>Votre compte a bien été créé. Un mail de confirmation vous a été envoyé.</p>";
-        // }
         $verifKey = Utilisateur::inscription($username, $user_email, $birthdate, $password, $user_tel);
         if (strlen($verifKey) > 0) {
             send_signup_mail($user_email, $username, $verifKey);
@@ -173,8 +156,8 @@ function check_signin() : string {
 }
 
 /**
- * Renvoie les id des derniers textes modifiés
- * @return array(string) les id des textes
+ * Get ids from last modified texts
+ * @return array ids
  */
 function last_modified_txts_ids() : array {
     require('conf/connexionbd.conf.php');
@@ -202,166 +185,13 @@ function last_modified_txts_ids() : array {
     return $array;
 }
 
-const MAX_TXT_PREVIEW_LENGTH = 1000;
-const MAX_POEM_LENGTH = 20;
-
-/**
- * Preview of the given file on the homepage when no user is connected.
- * @param filename : name of the file containing the text to display, without ".html".
- * @param category : novel or poem. Will change the way paragraphs are defined.
- * @return string html containing cropped story
- */
-function txt_preview(string $filename, ?string $title="", ?string $category="novel") : string {
-    if(empty($title)){
-        $title = ucfirst($filename);
-    }
-    $filepath = "text-examples/".$filename.".txt";
-    if(file_exists($filepath)){
-        $txt = file_get_contents($filepath);
-        if($category=="poem"){
-            $txt = "<pre class='p-4 text-left'>".$txt;
-            /*$nbbr = substr_count($txt,"\n");
-            if($nbbr >  MAX_POEM_LENGTH) {
-                $txt = substr($txt, 0, MAX_POEM_LENGTH*11);
-            }*/
-            $txt = substr($txt, 0, strnpos($txt, "\n\n", 2));
-            $txt .= strnpos($txt, "\n\n", 2);
-            $txt .= "</pre>";
-        }
-        else if($category=="haiku"){
-            $txt = "<pre class='p-4 text-center'>".$txt;
-            $txt = substr($txt, 0, strnpos($txt, "\n\n", 4));
-            $txt .= "</pre>";
-        }
-        else if($category=="novel"){
-            $txt = substr($txt, 0, strpos($txt, "\n\n"));
-            $txt = "<p class='p-4 text-left'>".str_replace("\n\n","</p><p>",$txt)."</p>";
-        }
-        else{
-            return "Catégorie de texte inconnue.";
-        }
-        if($_SESSION['session']==true){
-            $href = "lecture.php";
-        }
-        $txt = "<article class=\"text-preview col bg-secondary text-white px-0 m-3 rounded shadow\"> \n\t\t\t\t".
-                "<h3 class='p-2'>".$title."</h3>\n\t\t\t\t"
-                .$txt."<div class='preview-text-image container-fluid p-5 mb-0 bg-image' style=\"background-image: url(".first_pixabay($title).");\">
-                <a href=\"".$href."?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Lire la suite</a></div> \n\t\t\t
-                </article> \n";
-        return $txt;
-        
-    }
-    return "Ce texte n'existe pas.";
-}
-
-/**
- * Transforms full given .txt file into a pretty html piece of code. To be used when user is connected.
- * @param filename : name of the file containing the text to display, without ".html".
- * @param category : novel or poem. Will change the way paragraphs are defined.
- * @return string html containing full story
- */
-function txt_full(string $filename, ?string $category="novel", ?string $title="") : string {
-    if(empty($title)){
-        $title = ucfirst($filename);
-    }
-    $filepath = "text-examples/".$filename.".txt";
-    if(file_exists($filepath)){
-        $txt = file_get_contents($filepath);
-        return txt_display($txt, $title, $category);
-    }
-    return "Ce texte n'existe pas.";
-}
-
-/**
- * Preview of the end given file (used on the edit page).
- * @param filename : name of the file containing the text to display, without ".html".
- * @param category : novel or poem. Will change the way paragraphs are defined.
- * @return string html containing cropped story
- */
-function txt_end(string $filename, ?string $category="novel", ?string $title="") : string {
-    if(empty($title)){
-        $title = ucfirst($filename);
-    }
-    $filepath = "text-examples/".$filename.".txt";
-    if(file_exists($filepath)){
-        $txt = file_get_contents($filepath);
-
-        //crop the text and style accordingly to category
-        if(strlen($txt) >  MAX_TXT_PREVIEW_LENGTH) {
-            $txt = substr($txt, -MAX_TXT_PREVIEW_LENGTH);
-        }
-        if($category=="novel"){
-            $txt = str_replace("\n\n","</p><p>",$txt);
-            $txt = "<p>...".$txt."</p>";
-            $alignment = "left";
-        }
-        else if($category=="haikus"){
-            $nbbr = substr_count($txt,"\n");
-            if($nbbr >  MAX_POEM_LENGTH) {
-                $txt = substr($txt, -MAX_POEM_LENGTH*11);
-            }
-            $txt = "<pre>...".$txt."</pre>";
-            $alignment = "center";
-        }
-        else if($category=="poem") {
-            $nbbr = substr_count($txt,"\n");
-            if($nbbr >  MAX_POEM_LENGTH) {
-                $txt = substr($txt, -MAX_POEM_LENGTH*11);
-            }
-            $txt = "<pre>...".$txt."</pre>";
-            $alignment = "left";
-        }
-        else{
-            return "Catégorie de texte inconnue.";
-        }
-
-        //styling the cropped result
-        if($_SESSION['session']==true){
-            $txt = "<article class=\" text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
-            $title."</h3>\n\t\t\t\t"
-            .$txt."\n\t\t\t </article> \n";
-            return $txt;
-        }
-        $txt = "<article class=\" text-".$alignment." text-preview col-12 col-md-5 bg-secondary text-white p-4 m-4 rounded shadow\"> \n\t\t\t\t<h3>".
-        $title."</h3>\n\t\t\t\t"
-        .$txt."<a href=\"connexion.php?txt_id=".$filename."&txt_category=".$category."\" class=\"btn btn-info\" role=\"button\">Contribuer à ce texte</a> \n\t\t\t </article> \n";
-        return $txt;
-        
-    }
-
-    //text or category not found
-    return "Ce texte n'existe pas.";
-}
-
-function txt_display(string $txt, string $title, ?string $category="novel") : string {
-    if($category=="novel"){
-        $txt = "<p>".$txt;
-        $txt = str_replace("\n\n","</p><p>",$txt);
-        $txt .= "</p>";
-        $alignment = "left";
-    }
-    else if($category=="haiku"){
-        $txt = "<pre>".$txt."</pre>";
-        $alignment = "center";
-    }
-    else if($category=="poem"){
-        $txt = "<pre>".$txt."</pre>";
-        $alignment = "left";
-    }
-    else{
-        return "Unknown text category.";
-    }
-    $txt = "<article class=\"text-".$alignment." bg-secondary text-white p-4 m-1 rounded shadow\"> \n\t\t\t\t<h3>".
-        ucfirst($title)."</h3>\n\t\t\t\t"
-        .$txt."\n\t\t\t </article> \n";
-    return $txt;
-}
-
 include "api-keys.inc.php";
 define("RESULTS_MAX",20);
 
 /**
- * Décoder JSON vidéos pour API pixabay
+ * Gets json data from Pixabay where the videos match the keywords
+ * @param string keywords
+ * @return object json data containing videos
  */
 function decode_json_videos(string $d) : object{
     $url='https://pixabay.com/api/videos/?key='.PIXABAY_API_KEY.'&q='.$d;
@@ -371,9 +201,11 @@ function decode_json_videos(string $d) : object{
 }
 
 /**
- * Décoder JSON photos pour API pixabay
+ * Gets json data from Pixabay where the images match the keywords
+ * @param string keywords
+ * @return object json data containing images
  */
-function decode_json_photos(string $d) : object{
+function decode_json_photos(string $d) : object {
     $url='https://pixabay.com/api/?key='.PIXABAY_API_KEY.'&q='.$d.'&image_type=photo';
     $json=file_get_contents($url);
     $data = json_decode($json);
@@ -381,61 +213,35 @@ function decode_json_photos(string $d) : object{
 }
 
 /**
- * Préparer le string pour l'url
+ * Replaces spaces with '+' (for pixabay search purposes)
+ * @param string keywords separated by spaces or '+'
+ * @return string keywords separated by '+'
  */
-function explorer(string $requete) : string{
+function explorer(string $requete) : string {
     $exp = explode(" ", $requete);
-    $def_req="";
+    $def_req  = "";
     for ($n=0;$n<sizeof($exp);$n++){
         if ($n == count($exp)-1){
-        $def_req .=$exp[$n];
+        $def_req .= $exp[$n];
         } else {
-        $def_req .=$exp[$n]."+"; 
+        $def_req .= $exp[$n]."+"; 
         }
     }
     return $def_req;
 }
 
 /**
- * Renvoie l'url de la première image résultante de la recherche pour $q
+ * Generates html that displays videos from a selection by keyword
+ * @param string keyword
+ * @return string html code with videos
  */
-function first_pixabay(string $q) : string {
-    $def_q = explorer($q);
-    $datas = decode_json_photos($def_q);
-    $nbr = $datas->totalHits;
-    if ($nbr == 0){
-        return "AUCUNE PHOTOS NE CORRESPOND À VOTRE RECHERCHE";
-    } else {
-        $photos = $datas->hits;
-        return $photos[0]->webformatURL;
-    }
-}
-
-/**
- * Renvoie l'url de la première image en bonne qualité résultante de la recherche pour $q
- */
-function first_pixabay_fullhd(string $q) : string {
-    $def_q = explorer($q);
-    $datas = decode_json_photos($def_q);
-    $nbr = $datas->totalHits;
-    if ($nbr == 0){
-        return "AUCUNE PHOTOS NE CORRESPOND À VOTRE RECHERCHE";
-    } else {
-        $photos = $datas->hits;
-        return $photos[0]->fullHDURL;
-    }
-}
-
-/**
- * Avoir les vidéos demandées par l'user
- */
-function get_videos(string $q) : string{
+function get_videos(string $q) : string {
     $str="";
     $def_q = explorer($q);
     $datas = decode_json_videos($def_q);
     $nbr = $datas->totalHits;
     if ($nbr == 0){
-        $str="AUCUNE VIDÉOS NE CORRESPOND À VOTRE RECHERCHE";
+        $str="<p class='alert alert-info'>Aucune vidéo ne correspond à votre recherche.</p>";
         return $str;
     } else {
         $videos = $datas->hits;
@@ -456,11 +262,12 @@ function get_videos(string $q) : string{
 }
 
 /**
- * Avoir les photos demandées par l'user
+ * Generates html that allows the user to choose an image from a selection by keyword
+ * @param string keyword
+ * @return string html code with image buttons
  */
-function get_images(string $q) : string{
+function get_images(string $q) : string {
     if(isset($_GET["txt_id"])&&!empty($_GET["txt_id"])){
-        // $form = 'method="post" action="lecture.php?txt_id='.$_GET["txt_id"].'"';
         $form = 'method="post" action=""';
     }
     $str='<div id="pixabay_img_list" class="row">';
@@ -468,12 +275,11 @@ function get_images(string $q) : string{
     $datas = decode_json_photos($def_q);
     $nbr = $datas->totalHits;
     if ($nbr == 0){
-        $str="AUCUNE PHOTOS NE CORRESPOND À VOTRE RECHERCHE";
+        $str="<p class='alert alert-info'>Aucun résultat pour ".$q.".</p>";
         return $str;
     } else {
         $photos = $datas->hits;
         for ($i=0;$i<RESULTS_MAX;$i+=2){
-        //$photo_page = $photos[$i]->pageURL;
         $str .='<div class="preview_gif col-5 m-1">
                     <form '.$form.'>
                         <input type="hidden" name="txt_image" value="'.$photos[$i]->webformatURL.'">
@@ -525,7 +331,6 @@ function get_user_infos_else(string $user) : string{
     } 
     //We have informations
     $i = 0;
-    //$row2 = $textes->fetch_assoc();
     while ($row2 = $textes->fetch_assoc()) {
         $rows[$i] = $row2;
     }
@@ -533,7 +338,6 @@ function get_user_infos_else(string $user) : string{
     for ($i = 0;$i<sizeof($rows);$i++) {
         $texte = new Texte($rows[$i]["id_ecrit"]);
         $list .= $texte->txtPreviewCard();
-        //$list .="<li><a href='https://continuemonoeuvre.alwaysdata.net/lecture.php?text_id=".$rows[$i]["id_ecrit"]."'>".$rows[$i]["titre_texte"]."</a></li>";
     }
 
     return "<section><h2>Œuvres de ".$user."</h2>\n<div class='row'>".$list."</div></section>"; //Edit the answer  

@@ -9,7 +9,7 @@
     $title = $texte->__getTitre();
 
 ?>
-	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: url('<?php echo first_pixabay_fullhd($title); ?>');">
+	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: url('image/writing-pixabay2.jpg'); ">
 		<section class="container mt-1">
 			<?php 
 				if($_SESSION["session"]==true) {

@@ -2,7 +2,7 @@
     <h2 class="text-light">Choisir une illustration</h2>
     <form method="post">
         <fieldset>
-            <input type="text" name="search"/>
+            <input type="text" name="search" placeholder="blue sky" />
             <input type="submit" name="search_type" value="Photos" />
             <input type="submit" name="search_type" value="Vidéos" />
         </fieldset>

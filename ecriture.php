@@ -10,7 +10,7 @@
 
 ?>
 	<main class="bg-image pb-3 pt-2 mb-0 mt-0" style="background-image: url('image/writing-pixabay2.jpg'); ">
-		<section class="container mt-1">
+		<div class="container mt-1">
 			<?php 
 				if($_SESSION["session"]==true) {
 					if($isset_txt) {
@@ -27,7 +27,7 @@
 					echo "<a class='btn' href='connexion.php'>Se connecter</a>";
 				}
 			?>
-		</section>
+		</div>
 	</main>
 	<?php include "include/footer.inc.php"; ?>
 	

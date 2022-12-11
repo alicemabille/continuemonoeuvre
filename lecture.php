@@ -31,7 +31,7 @@
 						}
 						if (isset($_POST['txt_image']) && !empty($_POST['txt_image'])) {
 							$texte->setImage($_POST['txt_image']);
-						}
+						} 
 						// echo "<p class='text-light'>". print_r($_POST) ."</p>";
 						include "include/gif-board.inc.php";
 						echo '<form class="col-md-4 col-sm-6 m-1" action="ecriture.php?txt_id='.$txt_id.'" method="post">
@@ -50,6 +50,10 @@
 						// if(isset($_POST["txt_image"])&&!empty($_POST["txt_image"])) {
 						// 	$txt->setImage();
 						// }
+						echo '<form class="col-md-4 col-sm-6 m-1" action="generer_pdf.php" method="post">
+							<input type="hidden" name="txt_id_pdf" value="'.$txt_id.'" >
+							<button class="btn btn-primary">Générer le pdf du texte</button>
+							</form>';
 					}
 					else{
 						echo $texte->txtPreview();

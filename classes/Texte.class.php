@@ -11,11 +11,16 @@
         public const MAX_TXT_PREVIEW_LENGTH = 1000;
         public const MAX_POEM_LENGTH = 20;
 
+        /**
+         * Constructeur de la classe Texte
+         * @param int $idTexte l'identifiant du texte dont on veut récupérer les informations
+         */
         public function __construct(int $idTexte) {
             $this->idTexte = $idTexte;
             // Récupération des données associées au texte
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
+            // On récupère les données du texte à partir de la BD
             $query = "
                 SELECT * FROM texte WHERE id_texte=?;
             ";
@@ -242,7 +247,6 @@
         public function checkTextEdit(string $auteur, string $date):void {
             if (isset($_GET['txt_id']) && !empty($_GET['txt_id'])) {
                 if (isset($_POST['editor-textArea']) && !empty($_POST['editor-textArea'])) {
-                    // print_r($_POST['editor-textArea']);
                     $this->editText($_POST["editor-textArea"], $auteur, $date);
                 }
             } else {
@@ -396,7 +400,7 @@
         /**
          * Tous les gifs que les utilisateurs ont associés à ce texte
          *
-         * @return string
+         * @return string code html des réactions des utilisateurs
          */
         public function getReactions():string {
             //$res = "<div class='row row-cols-1 row-cols-md-3 g-4'>";
@@ -449,6 +453,10 @@
             return base64_encode($this->image);
         }
 
+        /**
+         * Modifie l'image associée à un texte
+         * @param string $newURL L'URL de la nouvelle image
+         */
         public function setImage(string $newURL):void {
             $newImage = file_get_contents($newURL);
 
@@ -468,7 +476,6 @@
                 $stmt->close();
             }
             $mysqli->close();
-            
         }
     }
 ?>

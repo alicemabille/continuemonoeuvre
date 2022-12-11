@@ -1,11 +1,14 @@
 <?php
+    /**
+     * Classe associée à la réaction d'un utilisateur sous forme de GIF à un texte
+     */
     class Reaction {
         private string $auteur;
         private int $texte;
         private string $url;
         
         /**
-         * __construct
+         * Constructeur de la classe Reaction
          *
          * @param  mixed $auteur
          * @param  mixed $texte
@@ -30,16 +33,17 @@
         }
 
         /**
-         * Méthode statique pour ajouter une réaction (gif) à un texte. Maximum 1 réaction par utilisateur.
+         * Méthode statique pour ajouter une réaction (GIF) à un texte. Maximum 1 réaction par utilisateur.
          * @param string $auteur Le nom de l'auteur de la réaction
          * @param int $texte L'id du texte sur lequel la réaction est faite
          * @param string $url L'URL du gif
-         * @return string Message de la validation ou d'erreur
+         * @return string Message de confirmation ou d'erreur
          */
         public static function ajouterReaction(string $auteur, int $texte, string $url):string {
             $res = "<p class='alert alert-danger'>Une erreur s'est produite.</p>";
             require 'conf/connexionbd.conf.php';
             $mysqli = new mysqli($host, $username, $password, $database, $port);
+            // On vérifie que c'est la première réaction de l'utilisateur pour ce texte
             $query = "SELECT COUNT(*) FROM reagir WHERE nom_auteur_reaction = ? AND id_texte_reaction = ?;";
             $stmt = $mysqli->prepare($query);
             if ($stmt) {
@@ -88,6 +92,7 @@
             // À appeller avant l'affichage des réactions
             require 'conf/connexionbd.conf.php';
             $mysqli = new mysqli($host, $username, $password, $database, $port);
+            // On vérifie l'existence d'une réaction pour le texte
             $query = "SELECT COUNT(*) FROM reagir WHERE nom_auteur_reaction = ? AND id_texte_reaction = ?;";
             $stmt->prepare($query);
             if ($stmt) {
@@ -113,7 +118,7 @@
         }
         
         /**
-         * Donne un code html contenant toutes les réactions à ce texte
+         * Donne un code html de la réaction à un texte
          *
          * @return string
          */

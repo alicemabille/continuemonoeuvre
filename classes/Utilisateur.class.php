@@ -1,4 +1,7 @@
 <?php
+    /**
+     * Classe associée à la manipulation d'un utilisateur du site
+     */
     class Utilisateur {
         private string $nomUtilisateur;
         private string $mailUtilisateur;
@@ -8,11 +11,16 @@
         private string $cleVerificationUtilisateur;
         private bool $compteActifUtilisateur;
 
+        /**
+         * Constructeur de la classe Utilisateur
+         * @param string $nomUtilisateur Le nom de l'utilisateur dont on veut récupérer les informations
+         */
         public function __construct(string $nomUtilisateur) {
             $this->nomUtilisateur = $nomUtilisateur;
             require 'conf/connexionbd.conf.php';
             $mysqli = new mysqli($host, $username, $password, $database, $port);
 
+            // On récupère les informations de l'utilisateur dans la BD
             $query = "SELECT * FROM utilisateur WHERE nom_utilisateur = ?;";
             $stmt = $mysqli->prepare($query);
             if ($stmt) {
@@ -63,7 +71,7 @@
         }
         
         /**
-         * addToDatabase
+         * Ajoute un nouvel utilisateur dans la base de données
          *
          * @param  mixed $nomUtilisateur
          * @param  mixed $mailUtilisateur
@@ -71,7 +79,7 @@
          * @param  mixed $mdpUtilisateur
          * @param  mixed $numTelUtilisateur
          * @param  mixed $cleVerificationUtilisateur
-         * @return bool
+         * @return bool Vrai si l'ajout a été effectué, faux sinon
          */
         private static function addToDatabase(string $nomUtilisateur, string $mailUtilisateur, string $naissanceUtilisateur, string $mdpUtilisateur, string $numTelUtilisateur, string $cleVerificationUtilisateur):bool {
             $res = false;
@@ -92,25 +100,21 @@
             $mysqli->close();
             return $res;
         }
-
-        private function connectionToDatabase():object {
-            require('conf/connexionbd.conf.php');
-            $mysqli = new mysqli($host, $username, $password, $database, $port);
-            return $mysqli;
-        }
                 
         /**
-         * checkUsername
+         * Vérifie la conformité du nom d'utilisateur
          *
          * @param  mixed $nomUtilisateur
-         * @return bool
+         * @return bool Vrai si le nom est conforme, faux sinon
          */
         private static function checkUsername(string $nomUtilisateur):bool {
             $res = false;
             $err = "";
             if (strlen($nomUtilisateur) >= 5 && strlen($nomUtilisateur) <= 20) {
+                // Taille du nom conforme
                 if (ctype_alnum($nomUtilisateur)) {
-                    // $mysqli = $this->connectionToDatabase();
+                    // Caractères alphanumériques uniquement
+
                     require 'conf/connexionbd.conf.php';
                     $mysqli = new mysqli($host, $username, $password, $database, $port);
                     $query = "SELECT COUNT(*) FROM utilisateur WHERE nom_utilisateur = ?;";
@@ -122,6 +126,7 @@
                         $fetch = $result->fetch_assoc();
                         $stmt->close();
                         if ($fetch['COUNT(*)'] == 0) {
+                            // Le nom est unique
                             $res = true;
                         } else {
                             $err = "<p class='alert alert-danger mt-2'>Ce nom est déjà pris par un autre utilisateur.</p>";
@@ -141,18 +146,18 @@
         }
         
         /**
-         * checkMail
+         * Vérifie la conformité de l'adresse mail
          *
          * @param  mixed $mailUtilisateur
-         * @return bool
+         * @return bool Vrai si l'adresse est conforme, faux sinon
          */
         private static function checkMail(string $mailUtilisateur):bool {
             $res = false;
             $err = "";
             if (filter_var($mailUtilisateur, FILTER_VALIDATE_EMAIL)) {
+                // L'adresse mail contient les caractères @ et .
                 require 'conf/connexionbd.conf.php';
                 $mysqli = new mysqli($host, $username, $password, $database, $port);
-                // $mysqli = $this->connectionToDatabase();
                 $query = "SELECT COUNT(*) FROM utilisateur WHERE mail_utilisateur = ?;";
                 $stmt = $mysqli->prepare($query);
                 if ($stmt) {
@@ -162,6 +167,7 @@
                     $fetch = $result->fetch_assoc();
                     $stmt->close();
                     if ($fetch['COUNT(*)'] == 0) {
+                        // L'adresse mail est unique
                         $res = true;
                     } else {
                         $err = "<p class='alert alert-danger mt-2'>Cette adresse mail a déjà été utilisé pour un autre compte.</p>";
@@ -178,17 +184,20 @@
         }
         
         /**
-         * checkNum
+         * Vérifie la conformité du numéro de téléphone
          *
          * @param  mixed $numTelUtilisateur
-         * @return bool
+         * @return bool Vrai si le numéro est conforme, faux sinon
          */
         private static function checkNum(string $numTelUtilisateur):bool {
             $res = false;
             $err = "";
             if (strlen($numTelUtilisateur) == 10) {
+                // Le numéro de téléphone est composé de 10 caractères
                 if (ctype_digit($numTelUtilisateur)) {
+                    // Les caractères sont numériques
                     if (substr($numTelUtilisateur, 0, 2) == "06" || substr($numTelUtilisateur, 0, 2) == "07") {
+                        // Les caractères commencent par 06 ou 07
                         $res = true;
                     } else {
                         $err = "<p class='alert alert-danger mt-2'>Votre numéro de téléphone est invalide</p>";
@@ -197,7 +206,8 @@
                     $err = "<p class='alert alert-danger mt-2'>Votre numéro de téléphone ne peut contenir que des chiffres.</p>";
                 }
             } else if (strlen($numTelUtilisateur) == 0) {
-                $res = true; // numéro de téléphone pas obligatoire
+                // Le numéro de téléphone est vide -> vrai car non obligatoire
+                $res = true;
             } else {
                 $err = "<p class='alert alert-danger mt-2'>Votre numéro de téléphone doit être composé de 10 chiffres.</p>";
             }
@@ -206,10 +216,10 @@
         }
         
         /**
-         * checkNaissance
+         * Vérifie la conformité de la date de naissance
          *
          * @param  mixed $naissanceUtilisateur
-         * @return bool
+         * @return bool Vrai si la date de naissance est conforme, faux sinon
          */
         private static function checkNaissance(string $naissanceUtilisateur):bool {
             $res = false;
@@ -219,9 +229,12 @@
             $date100 = date($format, strtotime("-100 years"));
             $dt = DateTime::createFromFormat($format, $naissanceUtilisateur);
 
-            if ($dt->format($format) == $naissanceUtilisateur) { // Date donnée au bon format AAAA-MM-JJ
-                if ($naissanceUtilisateur < $date) { // naissance < aujourd'hui
-                    if ($naissanceUtilisateur > $date100) { // naissance > 100 ans avant
+            if ($dt->format($format) == $naissanceUtilisateur) {
+                // La date est au bon format AAAA-MM-JJ
+                if ($naissanceUtilisateur < $date) {
+                    // La date est inférieure à la date du jour
+                    if ($naissanceUtilisateur > $date100) {
+                        // L'intervalle de date est supérieur à 100 ans
                         $res = true;
                     } else {
                         $err = "<p class='alert alert-danger mt-2'>Votre date de naissance est invalide.</p>";
@@ -237,16 +250,16 @@
         }
         
         /**
-         * checkMdp
+         * Vérifie la conformite du mot de passe
          *
          * @param  mixed $mdpUtilisateur
-         * @return bool
+         * @return bool Vrai si le mot de passe est conforme, faux sinon
          */
         private static function checkMdp($mdpUtilisateur):bool {
             $res = false;
             $err = "";
-             // minimum 8 caractères et maximum 20 caractères, au moins 1 min, au moins 1 MAJ, au moins 1 chiffre 
             if ((strlen($mdpUtilisateur) >= 8) && (strlen($mdpUtilisateur) <= 20) && (preg_match('/[a-z]/', $mdpUtilisateur)) && (preg_match('/[A-Z]/', $mdpUtilisateur)) && (preg_match('/[0-9]/', $mdpUtilisateur))) {
+                // minimum 8 caractères et maximum 20 caractères, au moins 1 min, au moins 1 MAJ, au moins 1 chiffre 
                 return true;
             }
             echo "<p class='alert alert-danger mt-2'>Votre mot de passe doit contenir au moins 1 chiffre, 1 majuscule, 1 minuscule et 8 caractères.</p>";
@@ -254,9 +267,9 @@
         }
         
         /**
-         * getTextsIds
+         * Retourne tous les id de texte pour lesquels l'utilisateur a contribué
          *
-         * @return array
+         * @return array La liste des id de textes
          */
         public function getTextsIds():array {
             $tab = array();
@@ -279,9 +292,9 @@
         }
         
         /**
-         * getReactionsIds
+         * Retourne la liste des id des réactions produites par l'utilisateur
          *
-         * @return array
+         * @return array La liste des id de réactions
          */
         public function getReactionsIds():array {
             $tab = array();
@@ -302,15 +315,6 @@
             $mysqli->close();
             return $tab;
         }
-
-        // Fonctions :
-            // Changement de mot de passe
-            // Affichage de la page profil -> functions.inc.php pour profil OK
-            // Array de tous les ids textes écrits par l'utilisateur -> modif bd nécessaire
-            // Array de tous les ids textes modifiés par l'utilisateur OK
-            // Array de tous les ids de réactions faites par l'utilisateur
-            // Nombre de modifications faites sur un texte donné -> modif bd nécessaire
-        
 
         public function __getNom():string {
             return $this->nomUtilisateur;
@@ -338,7 +342,6 @@
 
         public function __getCompteActif():bool {
             return $this->compteActifUtilisateur;
-
         }
 
         public function __setMail(string $mailUtilisateur):void {
@@ -351,22 +354,6 @@
 
         public function __setNaissance(string $naissanceUtilisateur):void {
             $this->naissanceUtilisateur = $naissanceUtilisateur;
-        }
-
-        // MOT DE PASSE OUBLIÉ
-        public function __setMdpChiff(string $mdpChiffUtilisateur):void {
-            $this->mdpChiffUtilisateur = $mdpChiffUtilisateur;
-            require 'conf/connexionbd.conf.php';
-            $mysqli = new mysqli($host, $username, $password, $database, $port);
-            $query = "UPDATE utilisateur SET mdp_chiff_utilisateur = ? WHERE nom_utilisateur = ?;";
-
-            $stmt = $mysqli->prepare($query);
-            if ($stmt) {
-                $stmt->bind_param("ss", $mdpChiffUtilisateur, $this->nomUtilisateur);
-                $stmt->execute();
-                $stmt->close();
-            }
-            $mysqli->close();
         }
 
         public function __setCleVerification(string $cleVerificationUtilisateur):void {

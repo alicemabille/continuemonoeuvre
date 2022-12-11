@@ -1,4 +1,7 @@
 <?php
+    /**
+     * Classe associée à l'initialisation d'une session d'un utilisateur sur le site
+     */
     class Session {
         private string $nomUtilisateur;
         private string $mdpUtilisateur;
@@ -72,3 +75,4 @@
             return $this->mdpUtilisateur;
         }
     }
+?>

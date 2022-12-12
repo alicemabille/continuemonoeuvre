@@ -55,6 +55,13 @@
         public static function creerTexte(string $titre, string $contenu, string $auteur, string $date, string $type='roman', string $imageURL=null):?int {
             require('conf/connexionbd.conf.php');
             $mysqli = new mysqli($host, $username, $password, $database, $port);
+           
+            /*si le texte a déjà été enregistré, on évite de l'engistrer à nouveau et on renvoie l'id
+            du texte existant*/
+            $id = Texte::noDuplicata($titre, $contenu);
+            if($id != -1){
+                return $id;
+            }
 
             if ($imageURL !== null) {
                 $image = file_get_contents($imageURL);
@@ -94,6 +101,34 @@
                 $stmtEcrire->bind_param("sis", $auteur, $id, $date);
                 $stmtEcrire->execute();
                 $stmtEcrire->close();
+            }
+            $mysqli->close();
+            return $id;
+        }
+
+        /**
+         * Vérifie qu'aucun texte n'a été ajouté à la base de données avec le même titre et le même contenu.
+         * Evite les duplicata.
+         * @param string titre
+         * @param string contenu
+         * @return int l'id du texte existant le cas échéant, -1 sinon.
+         */
+        public static function noDuplicata(string $titre, string $contenu) : int {
+            require('conf/connexionbd.conf.php');
+            $mysqli = new mysqli($host, $username, $password, $database, $port);
+            $id = -1;
+            $queryTexte = "
+                SELECT id_texte FROM texte
+                WHERE titre_texte=? AND contenu_texte=?;
+            ";
+            $stmtTexte = $mysqli->prepare($queryTexte);
+            if ($stmtTexte) {
+                $stmtTexte->bind_param("ss", $titre, $contenu);
+                $stmtTexte->execute();
+                $result = $stmtTexte->get_result();
+                $row = $result->fetch_assoc();
+                if($row["id_texte"]!=null) $id = $row["id_texte"];
+                $stmtTexte->close();
             }
             $mysqli->close();
             return $id;

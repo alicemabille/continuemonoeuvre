@@ -11,5 +11,4 @@
         <textarea class="form-control rounded shadow" name="editor-textArea" rows="20" placeholder="Il était une fois..." form="text-edit-form" required></textarea>
         <button type="submit" class="btn btn-primary col-md-4 col-sm-6 m-1" id="editor-submit-btn">Publier</button>
     </form>
-    <?php ?>
 </div>

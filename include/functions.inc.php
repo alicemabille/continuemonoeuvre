@@ -86,7 +86,7 @@ function check_signup() : string {
     &&isset($_POST["password"])&&(!empty($_POST["password"]))
     &&isset($_POST["password-confirm"])&&(!empty($_POST["password-confirm"])))
     {
-        if(!$_POST["password"] == $_POST["password-confirm"]){
+        if($_POST["password"] != $_POST["password-confirm"]){
             return "<p id='password-warning' class='alert alert-warning mt-3'>Les deux mots de passe entrés ne sont pas identiques.</p>";
         }
         $user_email = $_POST["email"];

@@ -18,6 +18,10 @@
 						$id = Texte::creerTexte($title, $_POST["editor-textArea"], $_SESSION['username'], $date, $_POST['category']);
 						$texte = new Texte($id);
 						echo $texte->txtFull();
+						echo "<div class='container row'>
+						<a href='lecture.php?txt_id=".$texte->__getId()."' class='btn btn-primary col m-5'>Voir la page de lecture</a>
+						<a href='index.php' class='btn btn-primary col m-5 '>Accueil</a>
+						</div>";
                     }
                 }
                 else {
